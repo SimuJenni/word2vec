@@ -12,3 +12,8 @@ word2vec
 distance
 
 compute-accuracy
+
+*.shuffled*
+
+*.bin
+
