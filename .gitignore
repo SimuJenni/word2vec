@@ -19,3 +19,7 @@ compute-accuracy
 
 Build
 
+
+*.zip
+
+*.bin
