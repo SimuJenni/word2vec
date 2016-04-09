@@ -25,3 +25,7 @@ Build
 *.bin
 
 word2vec_data
+
+*.aux
+
+*.log
