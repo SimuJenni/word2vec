@@ -22,6 +22,7 @@ Build
 
 *.zip
 
-*.bin
-
 word2vec_data
+
+word2vec_gensim/.idea
+
