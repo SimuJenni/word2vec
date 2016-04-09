@@ -23,3 +23,5 @@ Build
 *.zip
 
 *.bin
+
+word2vec_data
