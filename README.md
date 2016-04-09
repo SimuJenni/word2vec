@@ -3,6 +3,8 @@
 This repo contains three implementations of word2vec.
 It also contains a folder dedicated to the LATEX-report and a data folder named word2vec_data where all the training data, temporary files and results shold be stored.
 
+Run setup.sh to initialize the folders and download the training data.
+
 ### Original C Implementation
 
 Just build using make and run the demo-scripts.
