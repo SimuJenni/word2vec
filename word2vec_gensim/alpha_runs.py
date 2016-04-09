@@ -5,6 +5,9 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 
 corpus = Text8Corpus('../word2vec_data/text8')
 
-# Train baseline model
-model = gensim.models.Word2Vec(corpus)
-model.save('../word2vec_data/results/baseline')
+# Train models with different learning rates
+alphas = list(4**x for x in range(-4, 6))
+
+for a in alphas:
+    model = gensim.models.Word2Vec(corpus, alpha=a)
+    model.save('../word2vec_data/results/alpha_'+str(a))
