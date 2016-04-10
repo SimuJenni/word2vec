@@ -6,7 +6,7 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 corpus = Text8Corpus('../word2vec_data/text8')
 
 # Train models with different learning rates
-windows = range(2, 11)
+windows = range(2, 12)
 
 for w in windows:
     model = gensim.models.Word2Vec(corpus, window=w, workers=16)
