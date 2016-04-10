@@ -6,5 +6,5 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 corpus = Text8Corpus('../word2vec_data/text8')
 
 # Train baseline model
-model = gensim.models.Word2Vec(corpus)
+model = gensim.models.Word2Vec(corpus, workers=16)
 model.save('../word2vec_data/results/baseline')
