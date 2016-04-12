@@ -29,3 +29,11 @@ word2vec_gensim/.idea
 *.aux
 
 *.log
+
+*.fls
+
+*.fdb_latexmk
+
+*.blg
+
+*.bbl

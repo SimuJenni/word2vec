@@ -3,12 +3,13 @@
 
 \usepackage{cite}
 \usepackage{graphicx}
-\graphicspath{{images/}}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{caption}
 \usepackage{subcaption}
+
+\graphicspath{{images/}}
 
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
@@ -45,36 +46,6 @@ Email: simujenni@students.unibe.ch}
 Email: simon.brulhart@unifr.ch}
 }
 
-% conference papers do not typically use \thanks and this command
-% is locked out in conference mode. If really needed, such as for
-% the acknowledgment of grants, issue a \IEEEoverridecommandlockouts
-% after \documentclass
-
-% for over three affiliations, or if they all won't fit within the width
-% of the page, use this alternative format:
-% 
-%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
-%Homer Simpson\IEEEauthorrefmark{2},
-%James Kirk\IEEEauthorrefmark{3}, 
-%Montgomery Scott\IEEEauthorrefmark{3} and
-%Eldon Tyrell\IEEEauthorrefmark{4}}
-%\IEEEauthorblockA{\IEEEauthorrefmark{1}School of Electrical and Computer Engineering\\
-%Georgia Institute of Technology,
-%Atlanta, Georgia 30332--0250\\ Email: see http://www.michaelshell.org/contact.html}
-%\IEEEauthorblockA{\IEEEauthorrefmark{2}Twentieth Century Fox, Springfield, USA\\
-%Email: homer@thesimpsons.com}
-%\IEEEauthorblockA{\IEEEauthorrefmark{3}Starfleet Academy, San Francisco, California 96678-2391\\
-%Telephone: (800) 555--1212, Fax: (888) 555--1212}
-%\IEEEauthorblockA{\IEEEauthorrefmark{4}Tyrell Inc., 123 Replicant Street, Los Angeles, California 90210--4321}}
-
-
-
-
-% use for special paper notices
-%\IEEEspecialpapernotice{(Invited Paper)}
-
-
-
 
 % make the title area
 \maketitle
@@ -101,17 +72,47 @@ The abstract goes here.
 
 
 \section{Introduction}
-% no \IEEEPARstart
-This demo file is intended to serve as a ``starter file''
-for IEEE conference papers produced under \LaTeX\ using
-IEEEtran.cls version 1.8b and later.
-% You must have at least 2 lines in the paragraph with the drop letter
-% (should never be an issue)
-I wish you the best of success.
 
-\hfill mds
- 
-\hfill August 26, 2015
+Recent state of the art natural language models represent words by embedding them
+as vectors in a continuous vector space \cite{mikolov2013efficient} \cite{pennington2014glove}.
+These embeddings are learned as weights of a recurrent neural network language model.
+It has been demonstrated that the distributed representation of words as vectors
+in a common vector-space captures not just syntactic similarities (e.g. $cat$
+is close to $cats$) but semantic similarities as well. Concretely, the model's ability to
+perform word-arithmetic has been demonstrated \cite{mikolov2013linguistic}.
+To exemplify this, let $f$ be the word-embedding function. Ideally, we would then
+have an embedding where distances in vector-space give a measure of
+semantic-similarity between the words. For two word pairs such as $(king, man)$
+and $(queen, woman)$ which have the same relation (or similarity) we would
+obtain $f(king)-f(man) = f(queen) - f(woman)$ or equivalently $f(king)-f(man) +
+f(woman) = f(queen)$.
+
+
+The goal of this work is to further evaluate the performance of the popular word2vec
+tool on these tasks. word2vec is an implementation of the Continuous Bag of Words (CBOW) and Skip-Gram
+models introduced in \cite{mikolov2013efficient}. Both of these models are based
+on shallow two-layer neural networks with architectures depicted in Figure~\ref{fig:cbow}
+and Figure~\ref{fig:skip}. Both architectures take 1-hot-encoded words as inputs
+which get then mapped into into an $N$-dimensional vector via the weight matrix
+$W$. The hidden unit then accumulates the sum of these vectors for all the input
+words.
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=2.5in]{cbow}
+\caption{Architecture of the CBOW model.}
+\label{fig:cbow}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=2.5in]{skip-gram}
+\caption{Architecture of the Skip-Gram model.}
+\label{fig:skip}
+\end{figure}
+
 
 \subsection{Subsection Heading Here}
 Subsection text here.
@@ -137,7 +138,7 @@ Subsubsection text here.
 %\begin{figure}[!t]
 %\centering
 %\includegraphics[width=2.5in]{myfigure}
-% where an .eps filename suffix will be assumed under latex, 
+% where an .eps filename suffix will be assumed under latex,
 % and a .pdf suffix will be assumed for pdflatex; or what has been declared
 % via \DeclareGraphicsExtensions.
 %\caption{Simulation results for the network.}
@@ -153,7 +154,7 @@ Subsubsection text here.
 % The subfigure \label commands are set within each subfloat command,
 % and the \label for the overall figure must come after \caption.
 % \hfil is used as a separator to get equal spacing.
-% Watch out that the combined width of all the subfigures on a 
+% Watch out that the combined width of all the subfigures on a
 % line do not exceed the text width or a line break will occur.
 %
 %\begin{figure*}[!t]
@@ -210,7 +211,7 @@ Subsubsection text here.
 % in-text middle ("here") positioning is typically not used, but it
 % is allowed and encouraged for Computer Society conferences (but
 % not Computer Society journals). Most IEEE journals/conferences use
-% top floats exclusively. 
+% top floats exclusively.
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
@@ -252,25 +253,12 @@ The authors would like to thank...
 % http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 % The IEEEtran BibTeX style support page is at:
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
-%\bibliographystyle{IEEEtran}
+\bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
-%\bibliography{IEEEabrv,../bib/paper}
-%
-% <OR> manually copy in the resultant .bbl file
-% set second argument of \begin to the number of references
-% (used to reserve space for the reference number labels box)
-\begin{thebibliography}{1}
-
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
-
-\end{thebibliography}
+\bibliography{IEEEabrv,./bibliography}
 
 
 
 
 % that's all folks
 \end{document}
-
-
