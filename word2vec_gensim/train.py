@@ -12,8 +12,10 @@ from gensim.models.word2vec import Text8Corpus
 
 data_dir = Path('../word2vec_data')
 corpus = Text8Corpus('../word2vec_data/text8')
+sg = 1   # if 1, Skip-Gram else CBOW
 parameters = [
-    ('alpha', [4**x for x in range(-4, 6)]),     # learning rate
+    ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
+    ('alpha', [4**x for x in range(-5, 5)]),     # learning rate
     ('window', list(range(2, 12))),              # window size
     ('size', list(range(25, 301, 25)))           # vector size
 ]
@@ -27,7 +29,7 @@ def setup():
         logging.fatal('No "../word2vec_data" folder!')
         logging.fatal('Please create it or run the script from the right directory.')
         sys.exit(1)
-    for folder in ('results', 'eval'):
+    for folder in ('results_cbow', 'results_sg', 'eval'):
         (data_dir / folder).mkdir(exist_ok=True)
 
 
@@ -42,12 +44,13 @@ def train(corpus, param, value):
 
     Only load the pre-computed model if it already exists on disk.
     """
-    default_params = dict(sentences=corpus, iter=10, workers=os.cpu_count())
+    default_params = dict(sentences=corpus, iter=10, workers=os.cpu_count(), sg=sg)
     # Note: cpu_count() also counts "logical" cores (Hyper-threading))
 
     corpus_name = Path(corpus.fname).name
     fname = '{}_{}_{}'.format(corpus_name, param, value)
-    dest_path = data_dir / 'results' / fname
+    folder = 'results_cbow' if sg == 0 else 'results_sg'
+    dest_path = data_dir / folder / fname
     if dest_path.exists():
         logging.info("'{}' already exists, don't train again".format(fname))
         with dest_path.open('rb') as f:
@@ -56,6 +59,7 @@ def train(corpus, param, value):
     logging.info("Start training '{}'".format(fname))
     params = default_params.copy()
     params[param] = value
+
     model = gensim.models.Word2Vec(**params)
     model.save(dest_path.as_posix())
     return model
