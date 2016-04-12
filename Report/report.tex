@@ -70,7 +70,6 @@ The abstract goes here.
 \IEEEpeerreviewmaketitle
 
 
-
 \section{Introduction}
 
 Recent state of the art natural language models represent words by embedding them
@@ -82,44 +81,67 @@ is close to $cats$) but semantic similarities as well. Concretely, the model's a
 perform word-arithmetic has been demonstrated \cite{mikolov2013linguistic}.
 To exemplify this, let $f$ be the word-embedding function. Ideally, we would then
 have an embedding where distances in vector-space give a measure of
-semantic-similarity between the words. For two word pairs such as $(king, man)$
-and $(queen, woman)$ which have the same relation (or similarity) we would
+semantic-similarity between the words. For two word pairs such as $(king:man)$
+and $(queen:woman)$ which have the same relation (or similarity) we would
 obtain $f(king)-f(man) = f(queen) - f(woman)$ or equivalently $f(king)-f(man) +
-f(woman) = f(queen)$.
+f(woman) = f(queen)$. This of course is equivalent to forming the analogy "$king$ is
+to $man$ as $queen$ is to $woman$" 
 
+The goal of this work is to further evaluate the performance
+of the popular word2vec tool on these tasks. We evaluate the effect of
+different model and learning parameters on the performance  and test
+the limits of the models semantic-analysis capabilities on new challenging test data.
 
-The goal of this work is to further evaluate the performance of the popular word2vec
-tool on these tasks. word2vec is an implementation of the Continuous Bag of Words (CBOW) and Skip-Gram
-models introduced in \cite{mikolov2013efficient}. Both of these models are based
-on shallow two-layer neural networks with architectures depicted in Figure~\ref{fig:cbow}
-and Figure~\ref{fig:skip}. Both architectures take 1-hot-encoded words as inputs
-which get then mapped into into an $N$-dimensional vector via the weight matrix
-$W$. The hidden unit then accumulates the sum of these vectors for all the input
-words.
+\subsection{Related Work}
 
+The work by Tomas Mikolov \cite{mikolov2013efficient}, where the models were introduced,
+reports results on a test set they themselves created. The set contained five types of semantic
+questions where relations such as $Country \thicksim Currency$ or $Country \thicksim Capitol$
+were tested. In \cite{mikolov2013linguistic} the models performance on semantical
+similarity has been demonstrated on SemEval-2012 Task 2 \cite{jurgens2012semeval},
+where the objective is to decide how similar two target word-pairs such as
+$(glass:break)$ and $(soldier:fight)$ are with respect to a relation $"an X typically Y"$.
 
-
-\begin{figure}[h]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=2.5in]{cbow}
 \caption{Architecture of the CBOW model.}
 \label{fig:cbow}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=2.5in]{skip-gram}
 \caption{Architecture of the Skip-Gram model.}
 \label{fig:skip}
 \end{figure}
 
+\subsection{Models of word2vec}
+word2vec is an implementation of the Continuous Bag of Words (CBOW) and Skip-Gram
+models introduced in \cite{mikolov2013efficient}. Both of these models are based
+on shallow two-layer neural networks with architectures depicted in Figure~\ref{fig:cbow}
+and Figure~\ref{fig:skip}. Both architectures take one-hot encoded words as inputs
+which get then mapped into into an $N$-dimensional vector via the weight matrix
+$W$. The hidden unit then accumulates the sum of these vectors for all input
+words. The output of the model is then generated multiplying the hidden-units by
+weights $W'$ and applying soft-max to the result in order to generate a valid
+probability-distribution over words in the vocabulary.
 
-\subsection{Subsection Heading Here}
-Subsection text here.
+
+The models are learnt in an unsupervised fashion where either the centre-word of
+a series of words is predicted from its context (CBOW) or the context is
+predicted from the centre-word (Skip-Gram). Both models try to maximize the
+likelihood of their output. Training is done via gradient descent using back-propagation
+\cite{rumelhart1988learning} to compute derivatives.
 
 
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here.
+
+\section{Experiments}
+
+\subsection{Setup}
+
+\subsection{New Test Data}
+
 
 
 % An example of a floating figure using the graphicx package.
