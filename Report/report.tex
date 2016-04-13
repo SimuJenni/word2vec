@@ -106,9 +106,32 @@ The work by Tomas Mikolov \cite{mikolov2013efficient}, where the models were int
 reports results on a test set they themselves created. The set contained five types of semantic
 questions where relations such as $Country \thicksim Currency$ or $Country \thicksim Capitol$
 were tested. In \cite{mikolov2013linguistic} the models performance on semantical
-similarity has been demonstrated on SemEval-2012 Task 2 \cite{jurgens2012semeval},
-where the objective is to decide how similar two target word-pairs such as
-$(glass:break)$ and $(soldier:fight)$ are with respect to a relation "an $X$ typically $Y$".
+similarity has been demonstrated on SemEval-2012 Task 2 \cite{jurgens2012semeval}.
+The objective in this task is to decide how similar two target word-pairs such as
+$(glass:break)$ and $(soldier:fight)$ are with respect to a relation "an $X$ typically $Y$". 
+Though the model is not directly trained on this task, it achieved better results than  the previous
+best methods. 
+
+In \cite{levy2015improving} Levy et. al. provide a comprehensive study of several word 
+embedding techniques on the two tasks \textit{Word Similarity} and \textit{Analogy}. 
+They conclude that much of the performance gains of new embedding
+methods stem from design-choices and hyper-parameter optimisation rather than the 
+underlying algorithms. Performance estimation was based only on the test-data sets 
+introduced in \cite{mikolov2013efficient} and \cite{mikolov2013linguistic}.
+
+In a previous work \cite{levy2014dependency} they show that generalising the Skip-Gram 
+model's negative sampling to arbitrary contexts results in the model learning 
+functional-similarities. They demonstrate this by manually inspecting the top $k$ most 
+similar words to a given query word. A query for  \textit{Hogwarts} for example returns 
+a list of famous schools in their modified Skip-Gram implementation while CBOW returns 
+a list of Harry Potter characters.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=2.5in]{cbow}
+\caption{Architecture of the CBOW model.}
+\label{fig:cbow}
+\end{figure}
 
 \section{The Models of word2vec}
 \label{sec:model}
@@ -125,12 +148,7 @@ w_{abandon} = \begin{pmatrix}0 \\ 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \dots ,
 w_{zone} = \begin{pmatrix}0 \\ 0  \\ \vdots \\ 0 \\ 1 \end{pmatrix}
 \end{equation}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=2.5in]{cbow}
-\caption{Architecture of the CBOW model.}
-\label{fig:cbow}
-\end{figure}
+
 
 \begin{figure}[t]
 \centering
@@ -174,13 +192,31 @@ log-likelihood of their output. Training is done via gradient descent using back
 \section{Experiments}
 \label{sec:exp}
 
+In this sections we first outline our experimental setup, introduce novel test-data
+ and then report results obtained for different hyper-parameter choices and test scenarios. 
+
 \subsection{Setup}
+We used the Python re-implementation of word2vec contained in the Gensim library 
+\cite{rehurek_lrec}. This implementation is functionally identical to the original 
+C-implementation provided by \cite{mikolov2013efficient}, but is more readable and has 
+shown to perform just as well. 
+
+To compare the influence of hyper-parameters on the performance we train several models
+with different values for one of the parameters and keep all other parameters fixed. We 
+identified the following set of hyper-parameters for our experiments:
+\begin{enumerate}
+\item Context-window size
+\item Vector size (i.e dimension of hidden-layer)
+\item Learning rate $\alpha$
+\item Training corpus
+\item Hierarchical softmax vs. negative sampling for Skip-Gram
+\end{enumerate}
 
 
 \subsection{New Test Data}
 
 
-\section{Results}
+\subsection{Results}
 \label{sec:res}
 
 
