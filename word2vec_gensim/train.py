@@ -9,9 +9,18 @@ from pathlib import Path
 import gensim
 from gensim.models.word2vec import Text8Corpus
 
+from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
 
 data_dir = Path('../word2vec_data')
-corpus = Text8Corpus('../word2vec_data/text8')
+
+# Choose training corpus
+
+corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
+corpus, corpus_name = brown.sents(), 'brown'
+corpus, corpus_name = movie_reviews.sents(), 'movies'
+
+
+
 sg = 1   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
@@ -29,7 +38,7 @@ def setup():
         logging.fatal('No "../word2vec_data" folder!')
         logging.fatal('Please create it or run the script from the right directory.')
         sys.exit(1)
-    for folder in ('results_cbow', 'results_sg', 'eval'):
+    for folder in ('results_cbow', 'results_sg', 'eval_sg', 'eval_cbow'):
         (data_dir / folder).mkdir(exist_ok=True)
 
 
@@ -47,7 +56,6 @@ def train(corpus, param, value):
     default_params = dict(sentences=corpus, iter=10, workers=os.cpu_count(), sg=sg)
     # Note: cpu_count() also counts "logical" cores (Hyper-threading))
 
-    corpus_name = Path(corpus.fname).name
     fname = '{}_{}_{}'.format(corpus_name, param, value)
     folder = 'results_cbow' if sg == 0 else 'results_sg'
     dest_path = data_dir / folder / fname
