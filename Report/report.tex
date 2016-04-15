@@ -78,19 +78,27 @@ These embeddings are learned as weights of a recurrent neural network language m
 It has been demonstrated that the distributed representation of words as vectors
 in a common vector-space captures not just syntactic similarities (e.g. $cat$
 is close to $cats$) but semantic similarities as well. Concretely, the model's ability to
-perform word-arithmetic has been demonstrated \cite{mikolov2013linguistic}.
+perform "word-arithmetic" has been demonstrated in \cite{mikolov2013linguistic}.
 To exemplify this, let $f$ be the word-embedding function. Ideally, we would then
 have an embedding where distances in vector-space give a measure of
 semantic-similarity between the words. For two word pairs such as $(king:man)$
 and $(queen:woman)$ which have the same relation (or similarity) we would
 obtain $f(king)-f(man) = f(queen) - f(woman)$ or equivalently $f(king)-f(man) +
 f(woman) = f(queen)$. This of course is equivalent to forming the analogy "$king$ is
-to $man$ as $queen$ is to $woman$" 
+to $man$ as $queen$ is to $woman$". 
 
 The goal of this work is to further evaluate the performance
 of the popular word2vec tool on these tasks. We evaluate the effect of
 different model and learning parameters on the performance  and test
-the limits of the models semantic-analysis capabilities on new challenging test data.
+the limits of the models semantic-analysis capabilities on new challenging test data. 
+The ability to learn analogies has only really been demonstrated on rather general and 
+hand-picked test-sets. We test the models ability to learn domain-specific knowledge by 
+generating questions that test relationships such as $Brand \thicksim Country$ 
+and $Movie \thicksim Director$. Previous work only considers the nearest 
+resulting vector in the embedding space when evaluating the accuracy of this word-arithmetic. 
+We generalise the notion of accuracy by considering the not only the nearest word-vector, but 
+consider the set of the $k$ nearest vectors and test wether the target word is present therein. 
+
 
 The content of this paper is structured as follows: Section \ref{sec:relwork} gives an overview 
 of relevant previous work. In Section \ref{sec:model} we give a brief overview of the underlying 
