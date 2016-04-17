@@ -9,15 +9,15 @@ from pathlib import Path
 import gensim
 from gensim.models.word2vec import Text8Corpus
 
-from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
+# from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
 
 data_dir = Path('../word2vec_data')
 
 # Choose training corpus
 
 corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
-corpus, corpus_name = brown.sents(), 'brown'
-corpus, corpus_name = movie_reviews.sents(), 'movies'
+# corpus, corpus_name = brown.sents(), 'brown'
+# corpus, corpus_name = movie_reviews.sents(), 'movies'
 
 
 
@@ -69,6 +69,7 @@ def train(corpus, param, value):
     params[param] = value
 
     model = gensim.models.Word2Vec(**params)
+    model.init_sims(replace=True)
     model.save(dest_path.as_posix())
     return model
 
