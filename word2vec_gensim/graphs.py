@@ -75,8 +75,12 @@ def find_parameter_cases(parameter):
     ]"""
     pattern = 'eval_*/*_%s_*' % parameter
     results = [Result.parse_filename(f) for f in source_path.glob(pattern)]
-    results.sort()
-    return groupby(results, lambda r: (r.corpus, r.skipgram))
+
+    def groupkey(result):
+        return (result.corpus, result.skipgram)
+
+    results.sort(key=groupkey)
+    return groupby(results, key=groupkey)
 
 
 def main():
