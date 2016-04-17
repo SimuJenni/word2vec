@@ -9,7 +9,7 @@ from pathlib import Path
 import gensim
 from gensim.models.word2vec import Text8Corpus
 
-# from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
+from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
 
 data_dir = Path('../word2vec_data')
 
@@ -22,7 +22,7 @@ corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
 
 
 
-sg = 0   # if 1, Skip-Gram else CBOW
+sg = 1   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
     ('alpha', [4**x for x in range(-5, 2)]),     # learning rate

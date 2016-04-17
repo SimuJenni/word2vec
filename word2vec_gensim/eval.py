@@ -23,14 +23,14 @@ def run_evals():
 
     evaluate_questions('../word2vec_data/questions-words.txt', '../word2vec_data/results_cbow/', '../word2vec_data/eval_cbow/')
 
-    evaluate_questions('../word2vec_data/brands_questions.txt', '../word2vec_data/results_cbow/',
-                       '../word2vec_data/eval_cbow_brands/')
+    # evaluate_questions('../word2vec_data/brands_questions.txt', '../word2vec_data/results_cbow/',
+    #                    '../word2vec_data/eval_cbow_brands/')
 
     evaluate_questions('../word2vec_data/questions-words.txt', '../word2vec_data/results_sg/',
                        '../word2vec_data/eval_sg/')
 
-    evaluate_questions('../word2vec_data/brands_questions.txt', '../word2vec_data/results_sg/',
-                       '../word2vec_data/eval_sg_brands/')
+    # evaluate_questions('../word2vec_data/brands_questions.txt', '../word2vec_data/results_sg/',
+    #                    '../word2vec_data/eval_sg_brands/')
 
 def section_accuracy(section):
     correct, incorrect = section['correct'], section['incorrect']
