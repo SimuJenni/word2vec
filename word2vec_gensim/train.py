@@ -13,6 +13,7 @@ from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
 
 data_dir = Path('../word2vec_data')
 
+
 # Choose training corpus
 
 corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
@@ -21,7 +22,7 @@ corpus, corpus_name = movie_reviews.sents(), 'movies'
 
 
 
-sg = 1   # if 1, Skip-Gram else CBOW
+sg = 0   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
     ('alpha', [4**x for x in range(-5, 5)]),     # learning rate

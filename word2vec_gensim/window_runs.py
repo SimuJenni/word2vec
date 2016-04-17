@@ -9,5 +9,5 @@ corpus = Text8Corpus('../word2vec_data/text8')
 windows = range(2, 12)
 
 for w in windows:
-    model = gensim.models.Word2Vec(corpus, window=w, workers=16)
-    model.save('../word2vec_data/results/window_'+str(w))
+    model = gensim.models.Word2Vec(corpus, window=w, workers=16, iter=1)
+    # model.save('../word2vec_data/results/window_'+str(w))
