@@ -24,7 +24,7 @@ corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
 sg = 1   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
-    ('alpha', [4**x for x in range(-5, 5)]),     # learning rate
+    ('alpha', [4**x for x in range(-5, 2)]),     # learning rate
     ('window', list(range(2, 12))),              # window size
     ('size', list(range(25, 301, 25)))           # vector size
 ]
