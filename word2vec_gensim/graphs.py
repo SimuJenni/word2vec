@@ -39,24 +39,33 @@ def plot_parameter_graph(parameter):
     fig = pyplot.figure()
     plt = fig.add_subplot(111)
 
-    for (corpus, skipgram), cases in find_parameter_cases(parameter):
+    xticks = None
+    for (corpus, skipgram), results in find_parameter_cases(parameter):
+        results = list(sorted(results, key=lambda r: float(r.value)))
+
+        if not xticks:
+            xticks = ['{:.3g}'.format(float(r.value)) for r in results]
+            print(xticks)
+
         plot_values = []
-        for result in cases:
+        for result in results:
             data = result.load()
             accuracies = [
                 len(sect['correct']) / (len(sect['correct']) + len(sect['incorrect']))
                 for sect in data if len(sect['correct']) + len(sect['incorrect']) > 0
             ]
             average = sum(accuracies) / len(accuracies)
-            plot_values.append((float(result.value), average))
+            plot_values.append(average)
 
         label = "corpus: {}, skipgram: {}".format(corpus, skipgram)
-        xs, ys = zip(*sorted(plot_values))
-        plt.plot(xs, ys, label=label)
+        plt.plot(range(len(results)), plot_values, label=label)
 
+    plt.set_xticks(range(len(results)))
+    plt.set_xticklabels(xticks)
     plt.set_xlabel(pretty[parameter].capitalize())
+
     plt.set_ylabel('Accuracy')
-    plt.legend(loc='best')
+    plt.legend(loc='best', prop={'size': 10})
     fig.suptitle("Accuracy for different values of {}".format(pretty[parameter]))
 
     graph_path = source_path / 'graphs'
