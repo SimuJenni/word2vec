@@ -57,7 +57,8 @@ def plot_parameter_graph(parameter):
             average = sum(accuracies) / len(accuracies)
             plot_values.append(average)
 
-        label = "corpus: {}, skipgram: {}".format(corpus, skipgram)
+        skipgram_str = 'skipgram' if skipgram else 'cbow'
+        label = "corpus: {}, {}".format(corpus, skipgram_str)
         plt.plot(range(len(results)), plot_values, label=label)
 
     plt.set_xticks(range(len(results)))
