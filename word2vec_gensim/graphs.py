@@ -86,6 +86,9 @@ def find_parameter_cases(parameter):
     pattern = 'eval_*/*_%s_*' % parameter
     results = [Result.parse_filename(f) for f in source_path.glob(pattern)]
 
+    # Temporarily ignore brands
+    results = [r for r in results if not r.fpath.resolve().match('*/eval_*_brands/*')]
+
     def groupkey(result):
         return (result.corpus, result.skipgram)
 
