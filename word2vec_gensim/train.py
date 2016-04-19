@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 import gensim
-from gensim.models.word2vec import Text8Corpus
+from gensim.models.word2vec import Text8Corpus, LineSentence
 
 from nltk.corpus import brown, movie_reviews, treebank, reuters, gutenberg
 
@@ -18,10 +18,11 @@ data_dir = Path('../word2vec_data')
 corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
 corpus, corpus_name = brown.sents(), 'brown'
 corpus, corpus_name = movie_reviews.sents(), 'movies'
+corpus, corpus_name = treebank.sents(), 'treebank'
+corpus, corpus_name = LineSentence('../word2vec_data/text'), 'wiki'
 
 
-
-sg = 1   # if 1, Skip-Gram else CBOW
+sg = 0   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
     ('alpha', [4**x for x in range(-5, 5)]),     # learning rate
@@ -75,8 +76,11 @@ def train(corpus, param, value):
 
 def main():
     setup()
+    global sg
+    sg = 0
     run_trainings()
-
+    sg = 1
+    run_trainings()
 
 if __name__ == '__main__':
     main()
