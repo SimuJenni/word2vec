@@ -83,7 +83,7 @@ def plot_parameter_graph(parameter):
 
     graph_path = source_path / 'graphs'
     graph_path.mkdir(exist_ok=True)
-    graph_path /= 'graph_acc_{}.pdf'.format(parameter)
+    graph_path /= 'graph_acc_{}.png'.format(parameter)
     fig.savefig(graph_path.as_posix())
 
 
