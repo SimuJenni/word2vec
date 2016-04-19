@@ -70,7 +70,7 @@ def train(corpus, param, value):
     params[param] = value
 
     model = gensim.models.Word2Vec(**params)
-    model.init_sims(replace=True)
+    # model.init_sims(replace=True)
     model.save(dest_path.as_posix())
     return model
 
