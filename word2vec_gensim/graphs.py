@@ -108,12 +108,46 @@ def find_parameter_cases(parameter):
     return groupby(results, key=groupkey)
 
 
+def plot_accuracy_graph():
+    """
+        Plot the k-NN accuracy of word2vec models
+    """
+    pattern = 'accuracy/*_*_*'
+    results = [f for f in source_path.glob(pattern)]
+
+    fig = pyplot.figure()
+    plt = fig.add_subplot(111)
+
+    for result in results:
+        fpath = Path(result)
+        model_type, corpus, parameter, value = fpath.name.split('_')
+        try:
+            with fpath.open('rb') as f:
+                data = pickle.load(f)
+        except EOFError:
+            return None
+        label = "{} {}".format(model_type.upper(), corpus)
+        accuracy = data[len(data)-1]['accuracy']
+        plt.plot(range(len(accuracy)), accuracy, label=label)
+
+    plt.set_ylabel('Accuracy')
+    plt.set_xlabel('k')
+    plt.legend(loc='best', prop={'size': 10})
+    plt.grid()
+    fig.suptitle("k-NN Accuracy ")
+
+    graph_path = source_path / 'graphs'
+    graph_path.mkdir(exist_ok=True)
+    graph_path /= 'graph_knn-acc.png'
+    fig.savefig(graph_path.as_posix())
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: graphs.py <parameter>")
         sys.exit(1)
 
     plot_parameter_graph(sys.argv[1])
+    #plot_accuracy_graph()
 
 
 if __name__ == '__main__':
