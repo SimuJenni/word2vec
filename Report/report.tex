@@ -278,6 +278,17 @@ On Figure~\ref{fig:window} we see that the windows size has a small influence on
 Conversely, we see on Figure~\ref{fig:size} that a large enough vector size is essential for good performance. A larger value generally improves accuracy, although we get diminishing returns above a certain threshold. The vector size matters more for larger set.
 We noticed that the vector size also affects training time, so it is wise to restrain the vector size.
 
+The learning rate ($\alpha$) greatly affects performance as we see on Figure~3. There is a sweet-spot for $\alpha$ around which accuracy drops. However a learning rate around 0.031 yields good results for every models we tried.
+%TODO: I ignored the case "text8, cbow", I suspect there was an issue when drawing the graph.
+
+From a broader perspective, we see that the corpus size is from far what matters the most for performance. We also notice that the Skip-Gram model tends to outperform CBOW for larger corpora.
+
+\subsubsection{K-NN Accuracy}
+When a model gives a wrong answer, our accuracy definition ignore how far it was from the right answer. We tried a different definition of accuracy where we ask the model for its \textit{k} closest answer. We call it a success if this set of answer contains the right one.
+
+We plotted this k-NN accuracy for different values of \textit{k} on Figure~\ref{fig:knn}. We see that models are close to the right answer most of the time. To highlight this, the accuracy of the \textit{Skip-Gram, Text8} model improves by 50\% (20pt) with a \textit{k} of 3. It would be considered as accurate as the \textit{Skip-Gram, Wiki} model with a \textit{k} of 0 \footnote{0-NN accuracy is the same as the classic accuracy definition}.
+%TODO: Numbers guessed using the graph, may not be accurate
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{graph_acc_alpha}
@@ -302,7 +313,7 @@ We noticed that the vector size also affects training time, so it is wise to res
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{graph_knn-acc}
-\caption{k-NN accuracy. }
+\caption{k-NN accuracy according to k.}
 \label{fig:knn}
 \end{figure}
 
