@@ -16,7 +16,7 @@ pretty = {
     'hs': 'hierarchical softmax'
 }
 
-valid_corpora = ['wiki', 'text8', 'movies']
+valid_corpora = ['wiki', 'text8', 'brown']
 
 
 class Result(namedtuple('Result', ['corpus', 'parameter', 'value', 'skipgram', 'fpath'])):
@@ -74,11 +74,13 @@ def plot_parameter_graph(parameter):
     plt.set_xticks(range(len(results)))
     plt.set_xticklabels(xticks)
     plt.set_xlabel(pretty[parameter].capitalize())
+    plt.tick_params(axis='both', which='major', labelsize=10)
 
     plt.set_ylim([0, 1])
 
     plt.set_ylabel('Accuracy')
     plt.legend(loc='best', prop={'size': 10})
+    plt.grid()
     fig.suptitle("Accuracy for different values of {}".format(pretty[parameter]))
 
     graph_path = source_path / 'graphs'

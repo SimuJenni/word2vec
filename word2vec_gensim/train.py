@@ -16,10 +16,10 @@ data_dir = Path('../word2vec_data')
 # Choose training corpus
 
 corpus, corpus_name = Text8Corpus('../word2vec_data/text8'), 'text8'
-#corpus, corpus_name = brown.sents(), 'brown'
-corpus, corpus_name = movie_reviews.sents(), 'movies'
+corpus, corpus_name = brown.sents(), 'brown'
+#corpus, corpus_name = movie_reviews.sents(), 'movies'
 #corpus, corpus_name = treebank.sents(), 'treebank'
-corpus, corpus_name = LineSentence('../word2vec_data/text'), 'wiki'
+#corpus, corpus_name = LineSentence('../word2vec_data/text'), 'wiki'
 
 
 sg = 0   # if 1, Skip-Gram else CBOW

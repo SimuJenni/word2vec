@@ -134,10 +134,10 @@ def kNN_accuracy(model, questions, k=100, restrict_vocab=30000, most_similar=gen
 
 def main():
     logging.getLogger().setLevel(logging.INFO)
-    # run_evals()
-    evaluate_questions_kNN('../word2vec_data/questions-words.txt',
-                           '../word2vec_data/models/',
-                           '../word2vec_data/accuracy/')
+    run_evals()
+    #evaluate_questions_kNN('../word2vec_data/questions-words.txt',
+                           # '../word2vec_data/models/',
+                           # '../word2vec_data/accuracy/')
 
 if __name__ == '__main__':
     main()
