@@ -237,7 +237,7 @@ identified the following set of hyper-parameters for our experiments:
 We trained models using multiple text corpora to check if hyper-parameters influences performance differently depending on the corpus.
 These corpora include:
 \subsubsection{Wiki}
-The first 900 megabytes of the English Wikipedia dump on March 3th, 2006. 
+The first 900 megabytes of the English Wikipedia dump on March 3th, 2006.
 \footnote{Instructions to download and build the test data on this website: http://mattmahoney.net/dc/textdata.html}
 
 \subsubsection{Text8}
@@ -271,7 +271,12 @@ starting with "The ..." or similar.  The result if a set of 4'557 questions.
 \subsection{Results}
 
 \subsubsection{Influence of Hyper-Parameters on Model Performance}
-We first wanted to see the influence of hyper-parameters when using the existing generalized question sets as test-data. We 
+We first wanted to see the influence of hyper-parameters when using the generalized questions sets provided by word2vec. For this purpose we plotted the accuracy according to the value of a chosen hyper-parameter. Here the accuracy means the ratio of right answers to the total number of answers.
+
+On Figure~\ref{fig:window} we see that the windows size has a small influence on the accuracy. It also is difficult to pinpoint a common best value for every corpus. For example, a bigger window size seems beneficial when using CBOW with the wiki corpus, but detrimental when using Skip-Gram.
+
+Conversely, we see on Figure~\ref{fig:size} that a large enough vector size is essential for good performance. A larger value generally improves accuracy, although we get diminishing returns above a certain threshold. The vector size matters more for larger set.
+We noticed that the vector size also affects training time, so it is wise to restrain the vector size.
 
 \begin{figure}[t]
 \centering
