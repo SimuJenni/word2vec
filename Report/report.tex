@@ -303,13 +303,14 @@ A larger value generally improves accuracy, although we get diminishing returns 
 This is not surprising as the vector size defines the complexity of the model and therefore also matters more for larger corpora.
 We noticed that the vector size also has some effect on training time, so it is wise to restrain the vector size.
 
-The learning rate ($\alpha$) greatly affects performance as we see in Figure~\ref{fig:alpha}.
-There is a sweet-spot for $\alpha$ around which accuracy drops.
-However, a learning rate around 0.031 yields good results for every model we tried.
+The learning rate ($\alpha$) greatly affects performance as can be seen in Figure~\ref{fig:alpha}.
+There appears to be a critical spot for $\alpha$ around which the accuracy drops dramatically (values around 0.03 - 0.15). 
+However, a learning rate around 0.007 - 0.03 yields good results for every model we tried.
 %TODO: I ignored the case "text8, cbow", I suspect there was an issue when drawing the graph.
 
-From a broader perspective, we observe that the corpus size is by far what influences performance the most.
-We also notice that the Skip-Gram model tends to outperform CBOW for larger corpora.
+From a broader perspective, we observe that the corpus size is by far what influences performance the most. This is not surprising given 
+that neural networks are dependent on large amounts of training data. 
+We also notice that the Skip-Gram architecture  slightly outperforms CBOW in most cases.
 
 \begin{figure}[t]
 \centering
@@ -333,15 +334,10 @@ We also notice that the Skip-Gram model tends to outperform CBOW for larger corp
 \end{figure}
 
 \subsection{K-NN Accuracy}
-When a model gives the wrong answer, our accuracy definition ignores how far the model was from the right answer.
-We tried a different definition of accuracy where we ask the model for its \textit{k} closest answers.
-We call it a success if this set of answers contains the right one.
+In cases when the model gives the wrong answer, the common definition of accuracy ignores how far off the model's prediction was from the correct answer. To get an idea of how wrong the model really is, we tried a different definition of accuracy where we consider the $k$ nearest neighbours of the prediction. We count the answer as a success if this set of neighbours contains the correct answer.
 
-We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}.
-We see that models are close to the right answer most of the time.
-To highlight this, the accuracy of the \textit{Skip-Gram Text8} model improves by 50\% (20pt) with a \textit{k} of 3.
-It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \textit{k} of 1.
-\footnote{1-NN accuracy is the same as the classic accuracy definition}
+We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}. It is clearly observable that the accuracy increases dramatically when changing from $k=1$ \footnote{1-NN accuracy is the same as the classic accuracy definition} to $k=2$ or $3$ and only slowly starts saturating at around $k>10$. This suggest that the prediction is in fact very close most of the time.
+
 %TODO: Numbers guessed using the graph, may not be accurate
 
 \subsection{Distance Functions}
