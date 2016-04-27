@@ -232,6 +232,21 @@ identified the following set of hyper-parameters for our experiments:
 \item Hierarchical softmax vs. negative sampling for Skip-Gram
 \end{enumerate}
 
+\subsection{Training Text Corpora}
+
+We trained models using multiple text corpora to check if hyper-parameters influences performance differently depending on the corpus.
+These corpora include:
+\subsubsection{Wiki}
+The first 900 megabytes of the English Wikipedia dump on March 3th, 2006. 
+\footnote{Instructions to download and build the test data on this website: http://mattmahoney.net/dc/textdata.html}
+
+\subsubsection{Text8}
+Wiki set truncated to 100 megabytes. word2vec provides facilities for downloading and using this set.
+\footnote{Ready-to-use corpus: http://mattmahoney.net/dc/text8.zip}
+
+\subsubsection{Brown}
+English corpus of one million words assembled from 500 sources of different genres, created in 1961 at Brown University. It is considerably smaller than our other corpora. We used this set through the NLTK python library. \footnote{See http://www.nltk.org/book/ch02.html}
+%TODO: Would it be better to use reference(s) instead of footnotes, at least for some of them?
 
 \subsection{New Test Data}
 To test the models performance on domain-specific questions we constructed several 
@@ -254,6 +269,9 @@ starting with "The ..." or similar.  The result if a set of 4'557 questions.
 
 
 \subsection{Results}
+
+\subsubsection{Influence of Hyper-Parameters on Model Performance}
+We first wanted to see the influence of hyper-parameters when using the existing generalized question sets as test-data. We 
 
 \begin{figure}[t]
 \centering
