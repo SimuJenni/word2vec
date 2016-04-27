@@ -53,12 +53,11 @@ Email: simon.brulhart@unifr.ch}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-Current natural language models are able to capture semantic similarities between words.
+Current natural language models are able to capture semantic and syntactic relationships between words.
 This allows them to answer questions in the form of analogies: "X is to Y as U is to ?".
-We evaluate the performance of the word2vec tool on this task with different learning parameters.
-We generate new questions and demonstrate the models (in)ability to learn and answer on domain-specific knowledge. Using new questions we also highlight the general limits of these models capabilities.
-We use a broader definition of accuracy to offer a different perspective on models performance.
-Finally we try new distance functions to compute the similarity between words and demonstrate when they can benefit models accuracy.
+We study the performance of the word2vec tool on this task. To this end, we analyse the sensitivity to different hyper-parameter choices.
+We generate new questions and demonstrate the models (in)ability to learn and answer on domain-specific knowledge. Using new questions we also highlight the general limits of the model's capabilities.
+To offer a more detailed view of the model's performance, we introduce a broader definition of accuracy which is taking into account how far off the model is in a failure case. Finally, we experiment with different distance functions to compute the similarity between words and demonstrate when they can benefit the model's accuracy.
 
 
 \end{abstract}
