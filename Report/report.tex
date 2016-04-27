@@ -191,6 +191,15 @@ predicted from the centre-word (Skip-Gram). Both models try to maximize the
 log-likelihood of their output. Training is done via gradient descent using back-propagation
 \cite{rumelhart1988learning} to compute derivatives.
 
+At test-time when looking for the word most similar to a given word $w$ we solve for 
+\begin{equation}
+	x = \text{argmin}_{v \in V} d(f(w),f(v))
+\end{equation}
+Where $f$ is the embedding and $d$ is a distance function. We therefore search for the 
+word in the vocabulary which has the minimal distance in the embedding space. The 
+model as proposed by \cite{mikolov2013efficient} chose $d$ to be the cosine-distance, 
+but we investigate different choices such as $L^p$- or Dice-norms.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=2.5in]{skip-gram}
@@ -241,7 +250,7 @@ A set of analogy-questions for the relationship between famous movies and their 
 directors. The set was constructed by gathering movie-titles and last-name of the director for 
 some of the top rated movies according to IMDb. Similar to the Brand-Origin questions we 
 excluded movies with titles consisting of more than one word with the exception of titles 
-starting with "The ..." or similar.  
+starting with "The ..." or similar.  The result if a set of 4'557 questions. 
 
 
 \subsection{Results}

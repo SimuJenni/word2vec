@@ -1,8 +1,8 @@
 from __future__ import print_function
 import csv
 
-source = 'Brand_Data.csv'
-target = 'brands_questions.txt'
+source = 'movies.csv'
+target = 'movies_questions.txt'
 
 with open(source, 'rU') as f:
     reader = csv.reader(f)
