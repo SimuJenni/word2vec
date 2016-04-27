@@ -96,7 +96,7 @@ to $man$ as $queen$ is to $woman$".
 
 The goal of this work is to further evaluate the performance
 of the popular word2vec tool on these tasks. We evaluate the effect of
-different models and learning parameters on the performance and test
+different choices for model-architectures and hyper-parameters on the performance and test
 the limits of the models semantic-analysis capabilities on new challenging test data. 
 The ability to learn analogies has only really been demonstrated on rather general and 
 hand-picked test-sets. We test the models ability to learn domain-specific knowledge by 
@@ -278,41 +278,39 @@ excluded movies with titles composed of more than one word with the exception of
 starting with "The ..." or similar.  The result is a set of 4'557 questions.
 
 
-\subsection{Results}
+\section{Results}
+\label{sec:res}
 
-\subsubsection{Influence of Hyper-Parameters on Model Performance}
-We first wanted to see the influence of hyper-parameters when using the generalized questions sets provided by word2vec.
-For this purpose we plotted the accuracy according to the value of a chosen hyper-parameter.
-Here the accuracy means the ratio of right answers to the total number of answers.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_knn-acc}
+\caption{k-NN accuracy according to k.}
+\label{fig:knn}
+\end{figure}
 
-On Figure~\ref{fig:window} we see that the window size has a limited influence on the accuracy.
-It is also difficult to pinpoint a common best value for every corpus.
-For example, a bigger window size seems beneficial when using CBOW with the wiki corpus, but detrimental when using Skip-Gram.
 
-Conversely, we see on Figure~\ref{fig:size} that a large enough vector size is essential for good performance.
+\subsection{Influence of Hyper-Parameters on Model Performance}
+We first wanted to see the influence of hyper-parameters when using the generalised question set described in \cite{mikolov2013efficient}.
+For this purpose we plotted the accuracy obtained for different values of a chosen hyper-parameter.
+Here, the accuracy is defined as the ratio of right answers to the total number of questions.
+
+In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
+It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
+Generally the model is quite robust with respect to this hyper-parameter.
+Interestingly, a bigger window size seems beneficial when using CBOW on the wiki corpus, but detrimental when using Skip-Gram.
+
+Conversely, we see in Figure~\ref{fig:size} that a large enough vector size is essential for good performance.
 A larger value generally improves accuracy, although we get diminishing returns above a certain threshold.
-The vector size matters more for larger set.
-We noticed that the vector size also affects training time, so it is wise to restrain the vector size.
+This is not surprising as the vector size defines the complexity of the model and therefore also matters more for larger corpora.
+We noticed that the vector size also has some effect on training time, so it is wise to restrain the vector size.
 
-The learning rate ($\alpha$) greatly affects performance as we see on Figure~3.
+The learning rate ($\alpha$) greatly affects performance as we see in Figure~\ref{fig:alpha}.
 There is a sweet-spot for $\alpha$ around which accuracy drops.
-However a learning rate around 0.031 yields good results for every models we tried.
+However, a learning rate around 0.031 yields good results for every model we tried.
 %TODO: I ignored the case "text8, cbow", I suspect there was an issue when drawing the graph.
 
-From a broader perspective, we see that the corpus size is from far what matters the most for performance.
+From a broader perspective, we observe that the corpus size is by far what influences performance the most.
 We also notice that the Skip-Gram model tends to outperform CBOW for larger corpora.
-
-\subsubsection{K-NN Accuracy}
-When a model gives the wrong answer, our accuracy definition ignores how far the model was from the right answer.
-We tried a different definition of accuracy where we ask the model for its \textit{k} closest answers.
-We call it a success if this set of answers contains the right one.
-
-We plotted this k-NN accuracy for different values of \textit{k} on Figure~\ref{fig:knn}.
-We see that models are close to the right answer most of the time.
-To highlight this, the accuracy of the \textit{Skip-Gram Text8} model improves by 50\% (20pt) with a \textit{k} of 3.
-It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \textit{k} of 0.
-\footnote{0-NN accuracy is the same as the classic accuracy definition}
-%TODO: Numbers guessed using the graph, may not be accurate
 
 \begin{figure}[t]
 \centering
@@ -335,15 +333,20 @@ It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \
 \label{fig:window}
 \end{figure}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_knn-acc}
-\caption{k-NN accuracy according to k.}
-\label{fig:knn}
-\end{figure}
+\subsection{K-NN Accuracy}
+When a model gives the wrong answer, our accuracy definition ignores how far the model was from the right answer.
+We tried a different definition of accuracy where we ask the model for its \textit{k} closest answers.
+We call it a success if this set of answers contains the right one.
 
-\label{sec:res}
+We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}.
+We see that models are close to the right answer most of the time.
+To highlight this, the accuracy of the \textit{Skip-Gram Text8} model improves by 50\% (20pt) with a \textit{k} of 3.
+It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \textit{k} of 1.
+\footnote{1-NN accuracy is the same as the classic accuracy definition}
+%TODO: Numbers guessed using the graph, may not be accurate
 
+\subsection{Distance Functions}
+Results for new distance-functions will go here...
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -458,7 +461,7 @@ The conclusion goes here.
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
 % the document is modified later
-\IEEEtriggeratref{8}
+%\IEEEtriggeratref{8}
 % The "triggered" command can be changed if desired:
 %\IEEEtriggercmd{\enlargethispage{-5in}}
 
