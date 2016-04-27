@@ -245,7 +245,10 @@ Wiki set truncated to 100 megabytes. word2vec provides facilities for downloadin
 \footnote{Ready-to-use corpus: http://mattmahoney.net/dc/text8.zip}
 
 \subsubsection{Brown}
-English corpus of one million words assembled from 500 sources of different genres, created in 1961 at Brown University. It is considerably smaller than our other corpora. We used this set through the NLTK python library. \footnote{See http://www.nltk.org/book/ch02.html}
+English corpus of one million words assembled from 500 sources of different genres, created in 1961 at Brown University.
+It is considerably smaller than our other corpora.
+We used this set through the NLTK python library.
+\footnote{See http://www.nltk.org/book/ch02.html}
 %TODO: Would it be better to use reference(s) instead of footnotes, at least for some of them?
 
 \subsection{New Test Data}
@@ -271,22 +274,37 @@ starting with "The ..." or similar.  The result is a set of 4'557 questions.
 \subsection{Results}
 
 \subsubsection{Influence of Hyper-Parameters on Model Performance}
-We first wanted to see the influence of hyper-parameters when using the generalized questions sets provided by word2vec. For this purpose we plotted the accuracy according to the value of a chosen hyper-parameter. Here the accuracy means the ratio of right answers to the total number of answers.
+We first wanted to see the influence of hyper-parameters when using the generalized questions sets provided by word2vec.
+For this purpose we plotted the accuracy according to the value of a chosen hyper-parameter.
+Here the accuracy means the ratio of right answers to the total number of answers.
 
-On Figure~\ref{fig:window} we see that the window size has a limited influence on the accuracy. It is also difficult to pinpoint a common best value for every corpus. For example, a bigger window size seems beneficial when using CBOW with the wiki corpus, but detrimental when using Skip-Gram.
+On Figure~\ref{fig:window} we see that the window size has a limited influence on the accuracy.
+It is also difficult to pinpoint a common best value for every corpus.
+For example, a bigger window size seems beneficial when using CBOW with the wiki corpus, but detrimental when using Skip-Gram.
 
-Conversely, we see on Figure~\ref{fig:size} that a large enough vector size is essential for good performance. A larger value generally improves accuracy, although we get diminishing returns above a certain threshold. The vector size matters more for larger set.
+Conversely, we see on Figure~\ref{fig:size} that a large enough vector size is essential for good performance.
+A larger value generally improves accuracy, although we get diminishing returns above a certain threshold.
+The vector size matters more for larger set.
 We noticed that the vector size also affects training time, so it is wise to restrain the vector size.
 
-The learning rate ($\alpha$) greatly affects performance as we see on Figure~3. There is a sweet-spot for $\alpha$ around which accuracy drops. However a learning rate around 0.031 yields good results for every models we tried.
+The learning rate ($\alpha$) greatly affects performance as we see on Figure~3.
+There is a sweet-spot for $\alpha$ around which accuracy drops.
+However a learning rate around 0.031 yields good results for every models we tried.
 %TODO: I ignored the case "text8, cbow", I suspect there was an issue when drawing the graph.
 
-From a broader perspective, we see that the corpus size is from far what matters the most for performance. We also notice that the Skip-Gram model tends to outperform CBOW for larger corpora.
+From a broader perspective, we see that the corpus size is from far what matters the most for performance.
+We also notice that the Skip-Gram model tends to outperform CBOW for larger corpora.
 
 \subsubsection{K-NN Accuracy}
-When a model gives the wrong answer, our accuracy definition ignores how far the model was from the right answer. We tried a different definition of accuracy where we ask the model for its \textit{k} closest answers. We call it a success if this set of answers contains the right one.
+When a model gives the wrong answer, our accuracy definition ignores how far the model was from the right answer.
+We tried a different definition of accuracy where we ask the model for its \textit{k} closest answers.
+We call it a success if this set of answers contains the right one.
 
-We plotted this k-NN accuracy for different values of \textit{k} on Figure~\ref{fig:knn}. We see that models are close to the right answer most of the time. To highlight this, the accuracy of the \textit{Skip-Gram Text8} model improves by 50\% (20pt) with a \textit{k} of 3. It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \textit{k} of 0 \footnote{0-NN accuracy is the same as the classic accuracy definition}.
+We plotted this k-NN accuracy for different values of \textit{k} on Figure~\ref{fig:knn}.
+We see that models are close to the right answer most of the time.
+To highlight this, the accuracy of the \textit{Skip-Gram Text8} model improves by 50\% (20pt) with a \textit{k} of 3.
+It would be considered as accurate as the \textit{Skip-Gram Wiki} model with a \textit{k} of 0.
+\footnote{0-NN accuracy is the same as the classic accuracy definition}
 %TODO: Numbers guessed using the graph, may not be accurate
 
 \begin{figure}[t]
