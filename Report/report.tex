@@ -136,7 +136,7 @@ a list of Harry Potter characters.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=2.5in]{cbow}
+\includegraphics[width=0.375\textwidth]{cbow}
 \caption{Architecture of the CBOW model. The three one-hot input vectors represent the context 
 of a centre-word in a sentence and the output vector is a vector with probabilities over possible 
 centre-words. }
@@ -202,7 +202,7 @@ but we investigate different choices such as $L^p$- or Dice-norms.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=2.5in]{skip-gram}
+\includegraphics[width=0.4\textwidth]{skip-gram}
 \caption{Architecture of the Skip-Gram model. The output of this model are vectors with probabilities 
 for the words occurring in the context of the input word.}
 \label{fig:skip}
@@ -254,9 +254,36 @@ starting with "The ..." or similar.  The result if a set of 4'557 questions.
 
 
 \subsection{Results}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_alpha}
+\caption{Accuracy for different values of the learning rate $\alpha$. }
+\label{fig:alpha}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_size}
+\caption{Accuracy for different values of vector-size (i.e. dimension of embedding space). }
+\label{fig:size}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_window}
+\caption{Accuracy for different values of the context-window size. }
+\label{fig:window}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_knn-acc}
+\caption{k-NN accuracy. }
+\label{fig:knn}
+\end{figure}
+
 \label{sec:res}
-
-
 
 
 % An example of a floating figure using the graphicx package.
