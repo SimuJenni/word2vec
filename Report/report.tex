@@ -55,7 +55,7 @@ Email: simon.brulhart@unifr.ch}
 \begin{abstract}
 Current natural language models are able to capture semantic and syntactic relationships between words.
 This allows them to answer questions in the form of analogies: "X is to Y as U is to ?".
-We study the performance of the word2vec tool on this task. To this end, we analyse the sensitivity to different hyper-parameter choices.
+We study the performance of the word2vec tool on this task. To this end, we analyse the sensitivity to different hyperparameter choices.
 We generate new questions and demonstrate the models (in)ability to learn and answer on domain-specific knowledge. Using new questions we also highlight the general limits of the model's capabilities.
 To offer a more detailed view of the model's performance, we introduce a broader definition of accuracy which is taking into account how far off the model is in a failure case. Finally, we experiment with different distance functions to compute the similarity between words and demonstrate when they can benefit the model's accuracy.
 
@@ -78,7 +78,7 @@ To offer a more detailed view of the model's performance, we introduce a broader
 
 \section{Introduction}
 
-Recent state of the art natural language models represent words by embedding them
+Recent state-of-the-art natural language models represent words by embedding them
 as vectors in a continuous vector space \cite{mikolov2013efficient} \cite{pennington2014glove}.
 These embeddings are learned as weights of a recurrent neural network language model.
 It has been demonstrated that the distributed representation of words as vectors
@@ -89,26 +89,26 @@ To exemplify this, let $f$ be the word-embedding function. Ideally, we would the
 have an embedding where distances in vector-space give a measure of
 semantic-similarity between the words. For two word pairs such as $(king:man)$
 and $(queen:woman)$ which have the same relation (or similarity), we would
-obtain $f(king)-f(man) = f(queen) - f(woman)$ or equivalently $f(king)-f(man) +
-f(woman) = f(queen)$. This of course is equivalent to the analogy "$king$ is
+obtain $f(king)-f(man) \approx f(queen) - f(woman)$ or equivalently $f(king)-f(man) +
+f(woman) \approx f(queen)$. This of course is equivalent to the analogy "$king$ is
 to $man$ as $queen$ is to $woman$". 
 
 The goal of this work is to further evaluate the performance
 of the popular word2vec tool on these tasks. We evaluate the effect of
-different choices for model-architectures and hyper-parameters on the performance and test
+different choices for model-architectures and hyperparameters on the performance and test
 the limits of the models semantic-analysis capabilities on new challenging test data. 
-The ability to learn analogies has only really been demonstrated on rather general and 
+The ability to learn analogies has  been demonstrated on rather general and 
 hand-picked test-sets. We test the models ability to learn domain-specific knowledge by 
 generating questions that test relationships such as $Brand \thicksim Country$ 
-and $Movie \thicksim Director$. Previous work only considers the nearest 
+and $Movie \thicksim Director$. Previous work focuses on the nearest 
 resulting vector in the embedding space when evaluating the accuracy of this word-arithmetic. 
 We generalise the notion of accuracy by considering not only the nearest word-vector, but 
 consider the set of the $k$ nearest vectors and test wether the target word is present therein. 
 
 
 The content of this paper is structured as follows: Section \ref{sec:relwork} gives an overview 
-of relevant previous work. In Section \ref{sec:model} we give a brief overview of the underlying 
-model and in Section \ref{sec:exp} we outline the experimental setup and test-data used. 
+of relevant previous work. In Section \ref{sec:model} we present a brief overview of the underlying 
+model and in Section \ref{sec:exp} we outline the experimental setup and testdata used. 
 The results of the experiments are then reported in Section \ref{sec:res} before we conclude
 in \ref{sec:end}.
 
@@ -121,24 +121,24 @@ reports results on a test set they themselves created. The set contained five ty
 questions where relations such as $Country \thicksim Currency$ or $Country \thicksim Capital$
 were tested. In \cite{mikolov2013linguistic} the models performance on semantical
 similarity has been demonstrated on SemEval-2012 Task 2 \cite{jurgens2012semeval}.
-The objective in this task is to decide how similar two target word-pairs such as
+The objective in this task is to decide how similar two target wordpairs such as
 $(glass:break)$ and $(soldier:fight)$ are with respect to a relation "an $X$ typically $Y$". 
 Though the model is not directly trained on this task, it achieved better results than  the previous
 best methods. 
 
-In \cite{levy2015improving} Levy et. al. provide a comprehensive study of several word 
+In \cite{levy2015improving} Levy \textit{et. al.} provide a comprehensive study of several word 
 embedding techniques on the two tasks \textit{Word Similarity} and \textit{Analogy}. 
 They conclude that much of the performance gains of new embedding
-methods stem from design-choices and hyper-parameter optimisation rather than the 
-underlying algorithms. Performance estimation was based only on the test-data sets 
+methods stem from design choices and hyperparameter optimisation rather than the 
+underlying algorithms. Performance estimation was based only on the testdata sets 
 introduced in \cite{mikolov2013efficient} and \cite{mikolov2013linguistic}.
 
 In a previous work \cite{levy2014dependency} they show that generalising the Skip-Gram 
 model's negative sampling to arbitrary contexts results in the model learning 
-functional-similarities. They demonstrate this by manually inspecting the top $k$ most 
-similar words to a given query word. A query e.g. for \textit{Hogwarts} returns
+functional similarities. They demonstrate this by manually inspecting the top $k$ most 
+similar words to a given query word. A query \textit{e.g.} for \textit{Hogwarts} returns
 a list of famous schools in their modified Skip-Gram implementation while CBOW returns 
-a list of Harry Potter characters.
+a list of \textit{Harry Potter} characters.
 
 \begin{figure}[t]
 \centering
@@ -152,14 +152,14 @@ centre-words. }
 \section{The Models of word2vec}
 \label{sec:model}
 
-word2vec is an implementation of the Continuous Bag of Words (CBOW) and Skip-Gram
+The word2vec tool is an implementation of the Continuous Bag-of-Words (CBOW) and Skip-Gram
 models introduced in \cite{mikolov2013efficient}. Both of these models are based
 on  two-layer recurrent neural networks with architectures depicted in Figure~\ref{fig:cbow}
 and Figure~\ref{fig:skip}. The two architectures reflect the objectives of both models: CBOW
-is trained to predict the centre-word from its context in a sentence while Skip-Gram tries to predict
-the context from its centre. Both architectures take one-hot encoded words as inputs. Let $x_i$
-denote the input corresponding to word $i$ and let the input vocabulary be $V$, 
-then the inputs are given by the $|V|$-dimensional vectors:
+is trained to predict the centre word from its context in a sentence while Skip-Gram tries to predict
+the context from its centre. Both architectures take vectors of one-hot encoded words as inputs. Let $x_i$
+denote an input-vector corresponding to word $i$ and let the input vocabulary be $V$, 
+then the inputs to the model are given by the $|V|$-dimensional vectors:
 \begin{equation}
 w_{a} = \begin{pmatrix}1 \\ 0 \\ 0 \\ \vdots \\ 0 \end{pmatrix},
 w_{abandon} = \begin{pmatrix}0 \\ 1 \\ 0 \\ \vdots \\ 0 \end{pmatrix}, \dots ,
@@ -171,7 +171,7 @@ $\boldsymbol{W}$.  The hidden unit then accumulates the sum of these vectors for
 words in the case of CBOW and consists of only the vector associated with the single input in the 
 Skip-Gram model. The output of the model is generated by multiplying the hidden-units by
 weights $W'$ and applying softmax to the result in order to generate a valid
-probability-distribution over words in the vocabulary. Concretely, given a sequence of 
+probability distribution over words in the vocabulary. Concretely, given a sequence of 
 training words $w_1, w_2, \dots , w_T$ the hidden-states are computed as
 \begin{equation}
 	h(t) = \sigma (\boldsymbol{W}w(t) + \boldsymbol{H}h(t-1)),
@@ -189,22 +189,22 @@ with the softmax function $P_t$ of a $N$-dimensional vector $x$ given by:
 \begin{equation}
 	P_t(x)_i = \frac{e^{x_i}}{\sum_{j=1}^{N}{e^{x_j}}}
 \end{equation}
-The learnt word representation are then given by the columns of $\boldsymbol{W}$.
+The learnt word representations are then given by the columns of $\boldsymbol{W}$.
 
 The models are learnt in an unsupervised fashion where either the centre-word of
 a series of words is predicted from its context (CBOW) or the context is
-predicted from the centre-word (Skip-Gram). Both models try to maximise the
-log-likelihood of their output. Training is done via gradient descent using back-propagation
+predicted from the centre word (Skip-Gram). Both models try to maximise the
+log-likelihood of their output. Training is done via gradient descent using backpropagation
 \cite{rumelhart1988learning} to compute derivatives.
 
-At test-time when looking for the word most similar to a given word $w$ we solve for 
+At test time when looking for the word most similar to a given word $w$ we solve for 
 \begin{equation}
 	x = \text{argmin}_{v \in V} d(f(w),f(v))
 \end{equation}
 Where $f$ is the embedding and $d$ is a distance function. We therefore search for the 
 word in the vocabulary which has the minimal distance in the embedding space. The 
-model as proposed by \cite{mikolov2013efficient} chose $d$ to be the cosine-distance, 
-but we investigate different choices such as $L^p$- or Dice-norms.
+model as proposed by \cite{mikolov2013efficient} chose $d$ to be the cosine similarity, 
+but we investigate different choices such as $L^p$-norm or Dice similarity.
 
 \begin{figure}[t]
 \centering
@@ -218,18 +218,18 @@ for the words occurring in the context of the input word.}
 \section{Experiments}
 \label{sec:exp}
 
-In this sections we first outline our experimental setup, introduce novel test-data
- and then report results obtained for different hyper-parameter choices and test scenarios. 
+In this sections we first outline our experimental setup, introduce novel test data
+ and then report results obtained for different hyperparameter choices and test scenarios. 
 
 \subsection{Setup}
 We used the Python re-implementation of word2vec contained in the Gensim library 
 \cite{rehurek_lrec}. This implementation is functionally identical to the original 
-C-implementation provided by \cite{mikolov2013efficient}, but is more readable and has 
+C implementation provided by \cite{mikolov2013efficient}, but is easier to extend and has 
 shown to perform just as well. 
 
-To compare the influence of hyper-parameters on the performance we train several models
+To compare the influence of hyperparameters on the performance we train several models
 with different values for one of the parameters and keep all other parameters fixed. We 
-identified the following set of hyper-parameters for our experiments:
+identified the following set of hyperparameters for our experiments:
 \begin{enumerate}
 \item Context-window size
 \item Vector size (i.e dimension of hidden-layer)
@@ -240,14 +240,14 @@ identified the following set of hyper-parameters for our experiments:
 
 \subsection{Training Text Corpora}
 
-We trained models using multiple text corpora to check if hyper-parameters influence performance differently depending on the corpus.
+We trained models using multiple text corpora to check if hyperparameters influence performance differently depending on the corpus.
 These corpora include:
 \subsubsection{Wiki}
 The first 900 megabytes of the English Wikipedia dump on 03/03/2006.
 \footnote{Instructions to download and build the test data on this website: http://mattmahoney.net/dc/textdata.html}
 
 \subsubsection{Text8}
-Wiki set truncated to 100 megabytes. word2vec provides facilities for downloading and using this set.
+The first 100 megabytes of the English Wikipedia dump. Facilities for downloading and using this set are provided with word2vec.
 \footnote{Ready-to-use corpus: http://mattmahoney.net/dc/text8.zip}
 
 \subsubsection{Brown}
@@ -259,19 +259,19 @@ We used this set through the NLTK python library.
 
 \subsection{New Test Data}
 To test the models performance on domain-specific questions we constructed several 
-questions sets. The questions are all of the form "X is to Y as U is to ?", i.e. they take the 
+questions sets. The questions are all of the form "X is to Y as U is to ?", \textit{i.e.} they take the 
 form of analogies. We constructed the following sets of questions:
 
 \subsubsection{Brand-Origin}
 A set of questions testing for the relationship between well-known brands and their countries
 of origin. To construct this questions set we gathered names and country of origin for 
 the top 500 brands according to brandfinance.com. We excluded all the brands from countries
-with names composed of multiple words (e.g. United States of America, ...) due to the model 
+with names composed of multiple words (\textit{e.g.} United States of America, ...) due to the model 
 working on single words. The result is a set of 38'220 questions.
 
 \subsubsection{Movie-Director}
 A set of analogy-questions for the relationship between famous movies and their respective 
-directors. The set was constructed by gathering movie-titles and last-name of the director for 
+directors. The set was constructed by gathering movie titles and last name of the director for 
 some of the top rated movies according to IMDb. Similar to the Brand-Origin questions we 
 excluded movies with titles composed of more than one word with the exception of titles
 starting with "The ..." or similar.  The result is a set of 4'557 questions.
@@ -282,24 +282,37 @@ starting with "The ..." or similar.  The result is a set of 4'557 questions.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.5\textwidth]{graph_knn-acc}
-\caption{k-NN accuracy according to k.}
-\label{fig:knn}
+\includegraphics[width=0.5\textwidth]{graph_acc_window}
+\caption{Accuracy for different values of the context-window size. }
+\label{fig:window}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_size}
+\caption{Accuracy for different values of vector-size (i.e. dimension of embedding space). }
+\label{fig:size}
+\end{figure}
 
-\subsection{Influence of Hyper-Parameters on Model Performance}
-We first wanted to see the influence of hyper-parameters when using the generalised question set described in \cite{mikolov2013efficient}.
-For this purpose we plotted the accuracy obtained for different values of a chosen hyper-parameter.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_alpha}
+\caption{Accuracy for different values of the learning rate $\alpha$. }
+\label{fig:alpha}
+\end{figure}
+
+\subsection{Influence of Hyperparameters on Model Performance}
+We first wanted to see the influence of hyperparameters when using the generalised question set described in \cite{mikolov2013efficient}.
+For this purpose we plotted the accuracy obtained for different values of a chosen hyperparameter.
 Here, the accuracy is defined as the ratio of right answers to the total number of questions.
 
 In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
 It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
-Generally the model is quite robust with respect to this hyper-parameter.
+Generally the model is quite robust with respect to this hyperparameter.
 Interestingly, a bigger window size seems beneficial when using CBOW on the wiki corpus, but detrimental when using Skip-Gram.
 
 Conversely, we see in Figure~\ref{fig:size} that a large enough vector size is essential for good performance.
-A larger value generally improves accuracy, although we get diminishing returns above a certain threshold.
+A larger value generally improves accuracy, although we get diminishing returns above a certain point.
 This is not surprising as the vector size defines the complexity of the model and therefore also matters more for larger corpora.
 We noticed that the vector size also has some effect on training time, so it is wise to restrain the vector size.
 
@@ -312,25 +325,12 @@ From a broader perspective, we observe that the corpus size is by far what influ
 that neural networks are dependent on large amounts of training data. 
 We also notice that the Skip-Gram architecture  slightly outperforms CBOW in most cases.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_acc_alpha}
-\caption{Accuracy for different values of the learning rate $\alpha$. }
-\label{fig:alpha}
-\end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.5\textwidth]{graph_acc_size}
-\caption{Accuracy for different values of vector-size (i.e. dimension of embedding space). }
-\label{fig:size}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_acc_window}
-\caption{Accuracy for different values of the context-window size. }
-\label{fig:window}
+\includegraphics[width=0.5\textwidth]{graph_knn-acc}
+\caption{k-NN accuracy according to k.}
+\label{fig:knn}
 \end{figure}
 
 \subsection{K-NN Accuracy}
