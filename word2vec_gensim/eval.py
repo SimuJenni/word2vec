@@ -132,6 +132,58 @@ def kNN_accuracy(model, questions, k=100, restrict_vocab=30000, most_similar=gen
     return sections
 
 
+def most_similar_dice(model, positive=[], negative=[], topn=10, restrict_vocab=None):
+    """
+    Find the top-N most similar words. Positive words contribute positively towards the
+    similarity, negative words negatively.
+    This method computes dice similarity between a simple mean of the projection
+    weight vectors of the given words and the vectors for each word in the model.
+    Method copied and adjusted from gensim.models.word2vec.most_similar
+    """
+    model.init_sims()
+
+    if isinstance(positive, string_types) and not negative:
+        # allow calls like most_similar('dog'), as a shorthand for most_similar(['dog'])
+        positive = [positive]
+
+    # add weights for each word, if not already present; default to 1.0 for positive and -1.0 for negative words
+    positive = [
+        (word, 1.0) if isinstance(word, string_types + (ndarray,)) else word
+        for word in positive
+        ]
+    negative = [
+        (word, -1.0) if isinstance(word, string_types + (ndarray,)) else word
+        for word in negative
+        ]
+
+    # compute the weighted average of all words
+    all_words, mean = set(), []
+    for word, weight in positive + negative:
+        if isinstance(word, ndarray):
+            mean.append(weight * word)
+        elif word in model.vocab:
+            # mean.append(weight * model.syn0norm[self.vocab[word].index])
+            mean.append(weight * model.syn0[self.vocab[word].index]) # Probably have to use syn0 instead of syn0norm to get the unnormalized vectors
+            all_words.add(model.vocab[word].index)
+        else:
+            raise KeyError("word '%s' not in vocabulary" % word)
+    if not mean:
+        raise ValueError("cannot compute similarity with no input")
+    # mean = matutils.unitvec(array(mean).mean(axis=0)).astype(REAL)
+    mean = array(mean).mean(axis=0)
+
+    #limited = model.syn0norm if restrict_vocab is None else model.syn0norm[:restrict_vocab]
+    limited = model.syn0 if restrict_vocab is None else model.syn0[:restrict_vocab]
+    #dists = dot(limited, mean)
+    dists = abs(dot(limited, mean))/(abs(limited) + abs(mean))
+    if not topn:
+        return dists
+    best = matutils.argsort(dists, topn=topn + len(all_words), reverse=True)
+    # ignore (don't return) words from the input
+    result = [(model.index2word[sim], float(dists[sim])) for sim in best if sim not in all_words]
+    return result[:topn]
+
+
 def main():
     logging.getLogger().setLevel(logging.INFO)
     run_evals()
