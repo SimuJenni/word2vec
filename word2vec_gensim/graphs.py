@@ -148,8 +148,8 @@ def main():
         print("Usage: graphs.py <parameter>")
         sys.exit(1)
 
-    plot_parameter_graph(sys.argv[1])
-    #plot_accuracy_graph()
+    #plot_parameter_graph(sys.argv[1])
+    plot_accuracy_graph()
 
 
 if __name__ == '__main__':
