@@ -344,6 +344,40 @@ We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{
 \subsection{Distance Functions}
 Results for new distance-functions will go here...
 
+
+\begin{table*}[!t]
+\centering
+\label{my-label}
+\begin{tabular}{@{}c|cccc|cccccc|c@{}}
+\hline
+Method & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
+Cosine    & 45.2\%  & 18.7\%   & 21.3\% & 62.1\% & \textbf{15.5\%} & 15.0\% & 36.8\% & 77.6\% & \textbf{33.9\%} & 45.0\% & 42.0\% \\
+Dice      &    42.8\%     &    20.5\%      &    19.5\%    &    \textbf{65.0\%}    &   13.5\%     &     \textbf{15.4\%}   &    37.7\%    &    \textbf{79.2\%}    &    32.1\%    &     44.8\%   & 41.1\%        \\
+L2        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    15.2\%    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
+Manhattan &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%    &   8.8\%     &   25.7\%     &    72.8\%    &   24.8\%     &    36.2\%    &    36.1\%   \\
+Cosine+RC   &     \textbf{48.3\%}    &    \textbf{21.6\%}      &    \textbf{23.2\%}    &     63.4\%   &    14.8\%    &   14.4\%     &   \textbf{42.9\%}     &     77.9\%   &    33.8\%    &   \textbf{49.3\%}     &   \textbf{43.5\%}     \\
+ \hline
+\end{tabular}
+\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure we list the results of our proposed re-centering approach for comparison and note a significant increase in accuracy.}
+\end{table*}
+
+
+\begin{table*}[!t]
+\centering
+\label{my-label}
+\begin{tabular}{@{}c|cccc|cccccc|c@{}}
+\hline
+Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
+CBOW  & 55.7\%  & 15.7\%   & 35.2\% & 77.1\% & 25.7\% & 30.4\% & 53.4\% & 79.8\% & 38.3\% & 67.0\% & 53.5\% \\
+CBOW+RC    &    63.9\%     &    20.2\%      &    \textbf{43.7\%}    &    \textbf{80.0\%}    &   29.1\%     &    35.4\%  &    \textbf{62.8\%}    &    83.7\%   &    45.2\%    &     67.9\%   & 59.0\%        \\
+Skip-Gram &    \textbf{70.7\%}     &     20.8\%     &     34.6\%   &    71.3\%    &    \textbf{29.2\%}    &   37.1\%     &   55.1\%     &    88.6\%    &   48.9\%     &    68.3\%    &    58.3\%   \\
+Skip-Gram+RC  &     70.6\%    &    \textbf{21.3\%}      &    35.7\%   &     70.8\%   &    28.9\%    &   \textbf{38.9\%}     &   59.5\%    &     \textbf{89.5\%}   &    \textbf{49.8\%}    &   \textbf{70.0\%}    &   \textbf{59.6\%}     \\
+ \hline
+\end{tabular}
+\caption{Performance comparison of models with and without our proposed re-centering approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Wiki} corpus.}
+\end{table*}
+
+
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
 % For figures, \caption should occur after the \includegraphics.
