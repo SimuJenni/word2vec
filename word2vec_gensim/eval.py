@@ -9,13 +9,14 @@ import numpy as np
 from six import iteritems, itervalues, string_types
 
 
-def evaluate_questions(questions, modeldir, outdir):
+def evaluate_questions(questions, modeldir, outdir, most_sim_fun=gensim.models.Word2Vec.most_similar):
     for filename in os.listdir(modeldir):
         # Check if file can and should be evaluated
         if not filename.startswith('.') and filename not in os.listdir(outdir) and not filename.endswith('.npy'):
             logging.info('Computing accuracy of model: ' + filename)
             model = gensim.models.Word2Vec.load(modeldir + filename)
-            sections = model.accuracy(questions)
+            model = recenter_model(model)
+            sections = model.accuracy(questions, most_similar=most_sim_fun)
             # Write out to pickle file
             outfile = open(outdir + filename, 'wb+')
             pickle.dump(sections, outfile)
@@ -37,6 +38,12 @@ def run_evals():
                        '../word2vec_data/eval_sg_brands/')
 
 
+def recenter_model(model):
+    # model.syn0 = model.syn0 - np.mean(model.syn0, axis=0)     # Slightly better without this
+    model.init_sims()
+    model.syn0 = model.syn0norm - np.mean(model.syn0norm, axis=0)
+    return model
+
 def section_accuracy(section):
     correct, incorrect = section['correct'], section['incorrect']
     if correct + incorrect > 0:
@@ -49,6 +56,7 @@ def evaluate_questions_kNN(questions, modeldir, outdir, most_sim_fun=gensim.mode
         if not filename.startswith('.') and filename not in os.listdir(outdir) and not filename.endswith('.npy'):
             logging.info('Computing accuracy of model: ' + filename)
             model = gensim.models.Word2Vec.load(modeldir + filename)
+            # model = recenter_model(model)
             sections = kNN_accuracy(model, questions, most_similar=most_sim_fun)
             # Write out to pickle file
             outfile = open(outdir + filename, 'wb+')
@@ -61,9 +69,6 @@ def kNN_accuracy(model, questions, k=100, restrict_vocab=30000, most_similar=gen
     Compute k-Nearest Neighbor accuracy of the model.
     Code copied and adjusted from gensim.Model.Word2Vec.accuracy.
     """
-    # model.init_sims()
-    # model.syn0norm = model.syn0norm - np.mean(model.syn0norm, axis=0)
-
     ok_vocab = dict(sorted(iteritems(model.vocab), key=lambda item: -item[1].count)[:restrict_vocab])
     ok_index = set(v.index for v in itervalues(ok_vocab))
 
@@ -102,7 +107,7 @@ def kNN_accuracy(model, questions, k=100, restrict_vocab=30000, most_similar=gen
             ignore = set(model.vocab[v].index for v in [a, b, c])  # indexes of words to ignore
             predicted = None
             # find the most likely prediction, ignoring OOV words and input words
-            sims = most_similar(model, positive=[b, c], negative=[a], topn=False, restrict_vocab=restrict_vocab)
+            sims = most_similar(model, positive=[b, c], negative=[a], topn=False)
             sortedSims = matutils.argsort(sims, reverse=True)
             count = 0
             for index in matutils.argsort(sims, reverse=True):
@@ -134,44 +139,41 @@ def kNN_accuracy(model, questions, k=100, restrict_vocab=30000, most_similar=gen
     return sections
 
 
-def most_similar_dice(model, positive=[], negative=[], topn=10, restrict_vocab=None):
+def most_similar_myDists(model, positive=[], negative=[], topn=10, restrict_vocab=None):
     """
     Find the top-N most similar words. Positive words contribute positively towards the
     similarity, negative words negatively.
-    This method computes dice similarity between a simple mean of the projection
-    weight vectors of the given words and the vectors for each word in the model.
-    Method copied and adjusted from gensim.models.word2vec.most_similar
     """
     if isinstance(positive, string_types) and not negative:
         # allow calls like most_similar('dog'), as a shorthand for most_similar(['dog'])
         positive = [positive]
 
-    # add weights for each word, if not already present; default to 1.0 for positive and -1.0 for negative words
-    positive = [
-        (word, 1.0) if isinstance(word, string_types + (np.ndarray,)) else word
-        for word in positive
-        ]
-    negative = [
-        (word, -1.0) if isinstance(word, string_types + (np.ndarray,)) else word
-        for word in negative
-        ]
+    all_words = set()
+    model.init_sims()
 
-    # compute the weighted average of all words
-    all_words, target = set(), []
-    vecs = model.syn0
-    for word, weight in positive + negative:
+    def word_vec(word):
         if isinstance(word, np.ndarray):
-            target.append(weight * word)
+            return word
         elif word in model.vocab:
-            target.append(weight * vecs[model.vocab[word].index])
+            all_words.add(model.vocab[word].index)
+            return model.syn0[model.vocab[word].index]
         else:
             raise KeyError("word '%s' not in vocabulary" % word)
-    if not target:
-        raise ValueError("cannot compute similarity with no input")
-    target = np.array(target).sum(axis=0)
 
-    limited = vecs if restrict_vocab is None else vecs[:restrict_vocab]
-    dists = np.dot(limited, target)/(np.linalg.norm(limited, axis=1) + np.linalg.norm(target))
+    positive = [word_vec(word) for word in positive]
+    negative = [word_vec(word) for word in negative]
+
+    a = negative[0]
+    b = positive[0]
+    c = positive[1]
+    target = c + (b - a)
+
+    limited = model.syn0 if restrict_vocab is None else model.syn0[:restrict_vocab]
+
+    # dists = -np.linalg.norm(limited - target, axis=1)    # L2
+    # dists = -np.sum(np.abs(limited - target), axis=1)    # Manhattan
+    # dists = 2*np.dot(limited, target) / (np.linalg.norm(limited, axis=1)**2 + np.linalg.norm(target)**2)  # Dice
+    dists = np.dot(limited, target) / (np.linalg.norm(limited, axis=1)*np.linalg.norm(target))  # Cosine
 
     if not topn:
         return dists
@@ -184,10 +186,14 @@ def most_similar_dice(model, positive=[], negative=[], topn=10, restrict_vocab=N
 def main():
     logging.getLogger().setLevel(logging.INFO)
     #run_evals()
-    evaluate_questions_kNN('../word2vec_data/questions-words.txt',
-                           '../word2vec_data/models/',
-                           '../word2vec_data/accuracy/',
-                           most_sim_fun=most_similar_dice)
+    # evaluate_questions_kNN('../word2vec_data/questions-words.txt',
+    #                        '../word2vec_data/models/',
+    #                        '../word2vec_data/accuracy/',
+    #                        most_sim_fun=most_similar_cross)
+    evaluate_questions('../word2vec_data/questions-words.txt',
+                       '../word2vec_data/models/',
+                       '../word2vec_data/accuracy/',
+                       most_sim_fun=most_similar_myDists)
 
 if __name__ == '__main__':
     main()
