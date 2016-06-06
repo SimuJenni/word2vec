@@ -201,6 +201,7 @@ log-likelihood of their output. Training is done via gradient descent using back
 At test time when looking for the word most similar to a given word $w$ we solve for 
 \begin{equation}
 	x = \text{argmin}_{v \in V} d(f(w),f(v))
+	\label{eq:sim}
 \end{equation}
 Where $f$ is the embedding and $d$ is a distance function. We therefore search for the 
 word in the vocabulary which has the minimal distance in the embedding space. The 
@@ -214,6 +215,28 @@ but we investigate different choices such as $L^p$-norm or Dice similarity.
 for the words occurring in the context of the input word.}
 \label{fig:skip}
 \end{figure}
+
+\subsection{Mean-Shift for Better Discrimination}
+Solving for the closest word in Equation \ref{eq:sim} based on the cosine similarity can be interpreted as projecting on an $N$-dimensional unit sphere and looking for the projected vector with smallest  angle to the given query vector. This projection can lead to similar vectors being very close on the sphere and therefore hard to distinguish based on angular distance. This observation is also backed up by the plots shown Figure \ref{fig:knn} where we observe that the correct word is often very close by. Being able to better distribute out the the points on the sphere would therefore likely improve the predictions. 
+
+We therefore propose the following mean-shift procedure:
+\begin{enumerate}
+\item Normalise all vectors (\textit{i.e.} project on the unit sphere)
+\item Compute the mean of the normalised vectors
+\item Shift by mean
+\item Normalise again (\textit{i.e.} re-project on unit sphere)
+\item Compute dot-products with query vector to get cosine-similarities
+\end{enumerate}
+
+The intuition behind this procedure is depicted in Figure \ref{fig:rc}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.4\textwidth]{recenter}
+\caption{Sketch of the proposed mean-shift procedure in 2D. \textit{Left}: Unit sphere with projected vectors in red. The points on the right are relatively close together. The mean of the red points is indicated in blue. \textit{Right}: The shifted and reprojected points. The points are now farther apart and better distinguishable.}
+\label{fig:rc}
+\end{figure}
+
 
 
 \section{Experiments}
@@ -337,8 +360,7 @@ We also notice that the Skip-Gram architecture  slightly outperforms CBOW in mos
 \subsection{K-NN Accuracy}
 In cases when the model gives the wrong answer, the common definition of accuracy ignores how far off the model's prediction was from the correct answer. To get an idea of how wrong the model really is, we tried a different definition of accuracy where we consider the $k$ nearest neighbours of the prediction. We count the answer as a success if this set of neighbours contains the correct answer.
 
-We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}. It is clearly observable that the accuracy increases dramatically when changing from $k=1$ to $2$ or $3$ and only slowly starts saturating at around $k>10$. This suggest that the prediction is in fact very close most of the time.
-
+We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}. It is clearly observable that the accuracy increases dramatically when changing from $k=1$ to $2$ or $3$ and only slowly starts saturating at around $k>10$. This suggests that the prediction is in fact very not far off most of the time. 
 %TODO: Numbers guessed using the graph, may not be accurate
 
 \subsection{Distance Functions}
@@ -355,10 +377,10 @@ Cosine    & 45.2\%  & 18.7\%   & 21.3\% & 62.1\% & \textbf{15.5\%} & 15.0\% & 36
 Dice      &    42.8\%     &    20.5\%      &    19.5\%    &    \textbf{65.0\%}    &   13.5\%     &     \textbf{15.4\%}   &    37.7\%    &    \textbf{79.2\%}    &    32.1\%    &     44.8\%   & 41.1\%        \\
 L2        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    15.2\%    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
 Manhattan &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%    &   8.8\%     &   25.7\%     &    72.8\%    &   24.8\%     &    36.2\%    &    36.1\%   \\
-Cosine+RC   &     \textbf{48.3\%}    &    \textbf{21.6\%}      &    \textbf{23.2\%}    &     63.4\%   &    14.8\%    &   14.4\%     &   \textbf{42.9\%}     &     77.9\%   &    33.8\%    &   \textbf{49.3\%}     &   \textbf{43.5\%}     \\
+Cosine+RC   &     \textbf{47.6\%}    &    \textbf{21.6\%}      &    \textbf{23.0\%}    &     63.4\%   &    14.8\%    &   14.4\%     &   \textbf{42.9\%}     &     77.9\%   &    33.7\%    &   \textbf{49.2\%}     &   \textbf{43.5\%}     \\
  \hline
 \end{tabular}
-\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure we list the results of our proposed re-centering approach for comparison and note a significant increase in accuracy.}
+\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed re-centering approach for comparison and note a significant increase in accuracy.}
 \end{table*}
 
 
@@ -375,6 +397,22 @@ Skip-Gram+RC  &     70.6\%    &    \textbf{21.3\%}      &    35.7\%   &     70.8
  \hline
 \end{tabular}
 \caption{Performance comparison of models with and without our proposed re-centering approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Wiki} corpus.}
+\end{table*}
+
+
+\begin{table*}[!t]
+\centering
+\label{my-label}
+\begin{tabular}{@{}c|cccc|cccccc|c@{}}
+\hline
+Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
+CBOW  & 13.9\%  & 7.1\%   & 12.3\% & 72.2\% & 11.9\% & 19.0\% & 29.8\% & 59.5\% & 24.0\% & 43.0\% & 31.1\% \\
+CBOW+RC    &    34.4\%     &    16.0\%      &    15.6\%    &    \textbf{79.7\%}    &   15.3\%     &    \textbf{21.2\%}  &    42.3\%   &    65.6\%   &    31.2\%    &     45.7\%   & 40.0\%        \\
+Skip-Gram &    46.0\%     &     18.7\%     &     21.0\%   &    62.1\%    &    \textbf{15.5\%}    &   15.0\%     &   36.8\%     &    77.6\%    &   \textbf{33.9\%}     &    44.9\%    &    42.1\%   \\
+Skip-Gram+RC  &     \textbf{47.6\%}    &    \textbf{21.6\%}      &    \textbf{23.0\%}   &     63.4\%   &    14.8\%    &   14.4\%     &   \textbf{42.9\%}    &     \textbf{77.9\%}   &    33.7\%    &   \textbf{49.2\%}    &   \textbf{43.5\%}     \\
+ \hline
+\end{tabular}
+\caption{Performance comparison of models with and without our proposed re-centering approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Text8} corpus.}
 \end{table*}
 
 
