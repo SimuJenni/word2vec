@@ -39,9 +39,10 @@ def run_evals():
 
 
 def recenter_model(model):
-    # model.syn0 = model.syn0 - np.mean(model.syn0, axis=0)     # Slightly better without this
-    model.init_sims()
-    model.syn0 = model.syn0norm - np.mean(model.syn0norm, axis=0)
+    model.init_sims()   # Normalize
+    model.syn0 = model.syn0norm - np.mean(model.syn0norm, axis=0)   # Mean-shift
+    model.syn0norm = None
+    model.init_sims()   # Re-normalize
     return model
 
 def section_accuracy(section):
@@ -172,8 +173,7 @@ def most_similar_myDists(model, positive=[], negative=[], topn=10, restrict_voca
 
     # dists = -np.linalg.norm(limited - target, axis=1)    # L2
     # dists = -np.sum(np.abs(limited - target), axis=1)    # Manhattan
-    # dists = 2*np.dot(limited, target) / (np.linalg.norm(limited, axis=1)**2 + np.linalg.norm(target)**2)  # Dice
-    dists = np.dot(limited, target) / (np.linalg.norm(limited, axis=1)*np.linalg.norm(target))  # Cosine
+    dists = 2*np.dot(limited, target) / (np.linalg.norm(limited, axis=1)**2 + np.linalg.norm(target)**2)  # Dice
 
     if not topn:
         return dists
@@ -185,15 +185,18 @@ def most_similar_myDists(model, positive=[], negative=[], topn=10, restrict_voca
 
 def main():
     logging.getLogger().setLevel(logging.INFO)
+    most_sim = gensim.models.Word2Vec.most_similar  # Cosine distance
+    # most_sim = most_similar_myDists
+
     #run_evals()
     # evaluate_questions_kNN('../word2vec_data/questions-words.txt',
     #                        '../word2vec_data/models/',
     #                        '../word2vec_data/accuracy/',
-    #                        most_sim_fun=most_similar_cross)
+    #                        most_sim_fun=most_sim)
     evaluate_questions('../word2vec_data/questions-words.txt',
                        '../word2vec_data/models/',
                        '../word2vec_data/accuracy/',
-                       most_sim_fun=most_similar_myDists)
+                       most_sim_fun=most_sim)
 
 if __name__ == '__main__':
     main()
