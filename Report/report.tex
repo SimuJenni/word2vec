@@ -228,6 +228,7 @@ The intuition behind this approach is less one of performing word-vector arithme
 unit vectors when using the cosine similarity.
 
 \subsection{Considered Similarity Measures}
+\label{sec:sim}
 In our experiments we considered the following similarity measures:
 \begin{equation}
 	L^2(x,y) = ||x-y|| = \sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
@@ -245,6 +246,7 @@ We denote the approach in Equation \ref{eq:anal2} with cosine similarity by $cos
 
 
 \subsection{Mean-Shift for Better Discrimination}
+\label{sec:ms}
 Solving for the closest word in Equation \ref{eq:sim} based on the cosine similarity can be interpreted as projecting on an $N$-dimensional unit sphere and looking for the projected vector with smallest  angle to the given query vector. This projection can lead to similar vectors being very close on the sphere and therefore hard to distinguish based on angular distance. This observation is also backed up by the plots shown Figure \ref{fig:knn} where we observe that the correct word is often very close by. Being able to better distribute out the the points on the sphere would therefore likely improve the predictions. 
 
 We therefore propose the following mean-shift procedure:
@@ -355,9 +357,21 @@ starting with "The ..." or similar.  The result is a set of 4,557 questions.
 \end{figure}
 
 \subsection{Influence of Parameters on Model Performance}
-We first wanted to see the influence of parameters when using the generalised question set described in \cite{mikolov2013efficient}.
-For this purpose we plotted the accuracy obtained for different values of a chosen parameter.
-Here, the accuracy is defined as the ratio of the number over right answers to the total number of questions.
+We first evaluate the influence of parameter choices using Google's generalised analogy dataset described in \cite{mikolov2013efficient}.
+For this purpose we plotted the accuracy obtained for different values of a chosen parameter, while keeping all other parameters fixed. 
+The baseline model for the comparison (with default parameter values) is shown in Table \ref{tab:baseline} .
+Here, the accuracy is defined as the ratio of the number of right answers over the total number of questions.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}c|c|c|c@{}}
+\hline
+\begin{tabular}[c]{@{}c@{}}Model- \\ Architecture \end{tabular} & \begin{tabular}[c]{@{}c@{}}Learning \\Rate $\alpha$\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Window-\\ Size\end{tabular} & \begin{tabular}[c]{@{}c@{}}Vector-\\ Size\end{tabular} \\ \hline 
+Skip-Gram &	0.025 	& 	5 	& 100	\\ \hline
+\end{tabular}
+\caption{The parameter values for the baseline model used in our experiments. }
+\label{tab:baseline}
+\end{table}
 
 In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
 It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
@@ -394,12 +408,21 @@ We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{
 %TODO: Numbers guessed using the graph, may not be accurate
 
 \subsection{Distance Functions}
-Results for new distance-functions will go here...
+To compare the different similarity measures introduced in Subsections \ref{sec:sim} and  \ref{sec:ms} we show results on selected categories of the generalised analogy dataset \cite{mikolov2013efficient} obtained with the baseline Skip-Gram model with parameters shown in Table \ref{tab:baseline}. 
+The resulting accuracies are listed in Table \ref{tab:dists}. 
+
+We observe that overall cosine similarities perform significantly better than the other similarity measures (with a few exceptions). Possible explanations for this circumstance are difficult to provide. For one we note that that the Euclidean distance between weight-vectors are never explicitly used  in the training of the model. In fact, the weight vectors only occur in dot-products with the columns of the hidden-to-out weight matrix $\boldsymbol{W'}$. Another explanation is that the norm of a word vector is related to the word-frequency as found by \cite{Schakel:2015aa} and is therefore not directly helpful in the analogy task.
+
+\subsection{Mean Shift}
+Tables \ref{tab:msWiki} and \ref{tab:mst8} show results comparing models with and without the proposed mean-shift. We observe a slight overall improvement compared to the standard model for all the models we compared.  
+
+
+\subsection{Domain Specific Questions}
+Results for the domain specific questions will go here...
 
 
 \begin{table*}[t]
 \centering
-\label{my-label}
 \begin{tabular}{@{}c|cccc|cccccc|c@{}}
 \hline
 Method & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
@@ -410,12 +433,12 @@ $L^1$ &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%
 $CosMS$   &        \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.1\%}   &     63.4\%   &    15.1\%    &   15.0\%     &   \textbf{42.7\%}    &     77.9\%   &    \textbf{33.0\%}    &   \textbf{49.3\%}    &   \textbf{43.3\%}     \\
  \hline
 \end{tabular}
-\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed mean-shift approach for comparison and note a slight increase in accuracy.}
+\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed mean-shift approach for comparison and note a slight increase in accuracy. Note that the total is computed as the micro-average (mean over all questions).} 
+\label{tab:dists}
 \end{table*}
 
 \begin{table*}[t]
 \centering
-\label{my-label}
 \begin{tabular}{@{}c|cccc|cccccc|c@{}}
 \hline
 Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
@@ -426,6 +449,7 @@ Skip-Gram+RC  &     \textbf{70.5\%}    &    \textbf{21.3\%}      &    35.9\%   &
  \hline
 \end{tabular}
 \caption{Performance comparison of models with and without our proposed mean-shift approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Wiki} corpus.}
+\label{tab:msWiki}
 \end{table*}
 
 \begin{table*}[t]
@@ -436,11 +460,12 @@ Skip-Gram+RC  &     \textbf{70.5\%}    &    \textbf{21.3\%}      &    35.9\%   &
 Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
 CBOW  & 33.5\%  & 16.4\%   & 14.7\% & \textbf{79.7\%} & 13.9\% & \textbf{20.3\%} & 42.3\% & 65.4\% & 30.3\% & 44.7\% & 39.5\% \\
 CBOW+RC    &    35.3\%     &    17.5\%      &    15.8\%    &    78.4\%    &   14.9\%     &    19.9\%  &    42.3\%   &    64.9\%   &    31.0\%    &     45.3\%   & 39.8\%        \\
-Skip-Gram &    47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    \textbf{15.1\%}    &   15.4\%     &   40.1\%     &    77.8\%    &   \textbf{32.9\%}     &    48.3\%    &    43.0\%   \\
-Skip-Gram+RC  &     \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.1\%}   &     63.4\%   &    \textbf{15.1\%}     &   15.0\%     &   \textbf{42.7\%}    &     \textbf{77.9\%}   &    33.0\%    &   \textbf{49.3\%}    &   \textbf{43.3\%}     \\
+Skip-Gram &    47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    \textbf{15.1\%}    &   15.4\%     &   40.1\%     &    77.8\%    &   32.9\%     &    48.3\%    &    43.0\%   \\
+Skip-Gram+RC  &     \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.1\%}   &     63.4\%   &    \textbf{15.1\%}     &   15.0\%     &   \textbf{42.7\%}    &     \textbf{77.9\%}   &    \textbf{33.0\%}    &   \textbf{49.3\%}    &   \textbf{43.3\%}     \\
  \hline
 \end{tabular}
 \caption{Performance comparison of models with and without our proposed mean-shift approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Text8} corpus.}
+\label{tab:mst8}
 \end{table*}
 
 
