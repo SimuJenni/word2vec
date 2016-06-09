@@ -196,7 +196,7 @@ log-likelihood of their output. Training is done via gradient descent using back
 
 At test time when looking for the word most similar to a given word $w$ we solve for 
 \begin{equation}
-	x = \text{argmin}_{v \in V} d(f(w),f(v))
+	x = \text{argmax}_{v \in V} d(f(w),f(v))
 	\label{eq:sim}
 \end{equation}
 Where $f$ is the embedding and $d$ is a similarity measure. We therefore search for the 
@@ -213,15 +213,16 @@ for the words occurring in the context of the input word.}
 \end{figure}
 
 \subsection{Word Arithmetic for Solving Analogies}
+\label{sec:arithm}
 Consider the case of an analogy question "$X$ is to $Y$ as $U$ is to $V$" where we are interested in solving for the word $V$. Let $x=f(X)$, $y=f(Y)$ and $u=f(U)$ be the embedded words. The straightforward way of computing $v=f(V)$ is then to use Equation \ref{eq:sim} and solving for 
 \begin{equation}
-	v = \underset{v \in f(V)}{\text{argmin }}  d(v, x-y+u)
+	v = \underset{v \in f(V)}{\text{argmax }}  d(v, x-y+u)
 	\label{eq:anal}
 \end{equation}
 
 As it turns out however depending on the similarity measure $d(\cdot|\cdot)$ it can be a good idea to consider different approaches such as 
 \begin{equation}
-	v =  \underset{v \in f(V)}{\text{argmin }}  d(v, x) - d(v, y) + d(v, u)
+	v =  \underset{v \in f(V)}{\text{argmax }}  d(v, x) - d(v, y) + d(v, u)
 	\label{eq:anal2}
 \end{equation}
 The intuition behind this approach is less one of performing word-vector arithmetic and more one of finding the word $V$ most similar to $X$ and $U$ and dissimilar to $Y$. This approach turns out to work considerably better when using the cosine-similarity. Note that  Equations \ref{eq:anal} and  \ref{eq:anal2} are equivalent for 
@@ -231,10 +232,10 @@ unit vectors when using the cosine similarity.
 \label{sec:sim}
 In our experiments we considered the following similarity measures:
 \begin{equation}
-	L^2(x,y) = ||x-y|| = \sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
+	L^2(x,y) = -||x-y|| = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
 \end{equation}
 \begin{equation}
-	L^1(x,y) = \sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
+	L^1(x,y) = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
 \end{equation}
 \begin{equation}
 	Dice(x,y) = \frac{x\cdot y}{||x|| + ||y||}
@@ -268,7 +269,20 @@ The intuition behind this procedure is depicted in Figure \ref{fig:rc} which dem
 \label{fig:rc}
 \end{figure}
 
-
+\subsection{Combining Analogy Interpretations}
+We have already touched upon the idea that there are different ways of interpreting analogy exercises with respect to some similarity measure in Subsection \ref{sec:arithm}. The idea for Equation \ref{eq:anal2} for example is that we are looking for the vector $v$ most similar to $x$ and $u$ but dissimilar to $y$. We could however also pose it as looking for 
+\begin{equation}
+	v = \underset{v \in f(V)}{\text{argmin }}  |d(x, y)-d(u, v)|,
+\end{equation}
+that is $x$ and $y$ should have the same similarity as $u$ and $v$. Yet another option is to consider
+\begin{equation}
+	v = \underset{v \in f(V)}{\text{argmin }}  |d(x, u)-d(y, v)|.
+\end{equation}
+Note that these objectives all capture different aspects of the analogy, i.e. they are not implying each other. We propose to combine these objectives in a weighted sum of these terms. Let $\phi$ denote the term in Equation \ref{eq:anal2}, i.e. $\phi(v)=d(v, x) - d(v, y) + d(v, u)$. We then want to maximise  the following expression:
+\begin{equation}
+	\phi(v) - \lambda \cdot (|d(x, y)-d(u, v)| +   |d(x, u)-d(y, v)|)
+\end{equation}
+We set the weight parameter $\lambda = 0.1$ in our experiments and denote models using this similarity measure (including mean-shift) with $CosMS+$. 
 
 \section{Experiments}
 \label{sec:exp}
@@ -426,11 +440,13 @@ Results for the domain specific questions will go here...
 \begin{tabular}{@{}c|cccc|cccccc|c@{}}
 \hline
 Method & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
-$CosAdd$    & 47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    15.1\%   &   \textbf{15.4\%}     &   40.1\%     &    77.8\%    &   32.9\%     &    48.3\%    &    43.0\%   \\
-$Dice$      &    42.8\%     &    20.5\%      &    19.5\%    &    \textbf{65.0\%}    &   13.5\%     &     \textbf{15.4\%}   &    37.7\%    &    \textbf{79.2\%}    &    32.1\%    &     44.8\%   & 41.1\%        \\
-$L^2$        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    \textbf{15.2\%}    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
+$CosAdd$    & 47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    15.1\%   &   15.4\%    &   40.1\%     &    77.8\%    &   32.9\%     &    48.3\%    &    43.0\%   \\
+$Dice$      &    42.8\%     &    20.5\%      &    19.5\%    &    65.0\%    &   13.5\%     &     15.4\%  &    37.7\%    &    \textbf{79.2\%}    &    32.1\%    &     44.8\%   & 41.1\%        \\
+$L^2$        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    15.2\%    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
 $L^1$ &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%    &   8.8\%     &   25.7\%     &    72.8\%    &   24.8\%     &    36.2\%    &    36.1\%   \\
-$CosMS$   &        \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.1\%}   &     63.4\%   &    15.1\%    &   15.0\%     &   \textbf{42.7\%}    &     77.9\%   &    \textbf{33.0\%}    &   \textbf{49.3\%}    &   \textbf{43.3\%}     \\
+$CosMul$   &        43.4\%    &    20.5\%     &    20.6\%   &     56.5\%   &    13.2\%    &   11.8\%     &   39.7\%    &     73.5\%   &    28.6\%   &   39.9\%   &   39.5\%     \\
+$CosMS$   &        47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\%   &    15.1\%    &   15.0\%     &   \textbf{42.7\%}    &     77.9\%   &    33.0\%    &   \textbf{49.3\%}    &   43.3\%     \\
+$CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   &     \textbf{65.4\%}   &    \textbf{15.5\%}    &   \textbf{16.0\%}     &   \textbf{43.9\%}    &     78.4\%   &    \textbf{33.9\%}    &   47.7\%    &   \textbf{44.0\%}     \\
  \hline
 \end{tabular}
 \caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed mean-shift approach for comparison and note a slight increase in accuracy. Note that the total is computed as the micro-average (mean over all questions).} 
@@ -441,11 +457,15 @@ $CosMS$   &        \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.
 \centering
 \begin{tabular}{@{}c|cccc|cccccc|c@{}}
 \hline
-Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
+Model & \begin{tabular}[c]{@{}c@{}}Capital\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
 CBOW  & 63.6\%  & 19.1\%   & 42.8\% & \textbf{79.7\%} & 28.4\% & 36.0\% & 62.3\% & 84.3\% & 45.3\% & 67.8\% & 58.7\% \\
-CBOW+RC    &    63.9\%     &    19.7\%      &    \textbf{43.9\%}    &    \textbf{79.7\%}    &   28.4\%     &    35.7\%  &    \textbf{63.4\%}    &    83.9\%   &    45.3\%    &     67.8\%   & 59.1\%        \\
-Skip-Gram &    70.4\%     &     \textbf{21.3\%}     &     34.6\%   &    70.5\%    &    \textbf{29.2\%}    &   \textbf{38.6\%}     &   58.7\%     &    89.4\%    &   49.2\%     &    69.3\%    &    59.2\%   \\
-Skip-Gram+RC  &     \textbf{70.5\%}    &    \textbf{21.3\%}      &    35.9\%   &     70.8\%   &    28.3\%    &   \textbf{38.6\%}     &   58.7\%    &     \textbf{89.5\%}   &    \textbf{49.6\%}    &   \textbf{70.0\%}    &   \textbf{59.4\%}     \\
+CBOW $CosMS$    &    63.9\%     &    19.7\%      &    43.9\%    &    \textbf{79.7\%}    &   28.4\%     &    35.7\%  &    \textbf{63.4\%}    &    83.9\%   &    45.3\%    &     67.8\%   & 59.1\%        \\
+CBOW $CosMS+$    &    64.9\%     &    20.2\%      &    \textbf{44.5\%}    &    79.2\%    &   28.8\%     &    34.2\%  &    \textbf{63.4\%}    &    83.7\%   &    44.4\%    &     67.8\%   & 59.1\%        \\
+
+Skip-Gram &    70.4\%     &     21.3\%     &     34.6\%   &    70.5\%    &    \textbf{29.2\%}    &   \textbf{38.6\%}     &   58.7\%     &    89.4\%    &   49.2\%     &    69.3\%    &    59.2\%   \\
+Skip-Gram $CosMS$  &     70.5\%   &    21.3\%      &    35.9\%   &     70.8\%   &    28.3\%    &   \textbf{38.6\%}     &   58.7\%    &     \textbf{89.5\%}   &    \textbf{49.6\%}    &   70.0\%    &   59.4\%     \\
+Skip-Gram $CosMS+$  &     \textbf{71.6\%}    &    \textbf{21.9\%}      &    37.4\%   &     73.7\%   &    28.0\%    &   37.7\%     &   60.1\%    &     88.9\%   &    48.6\%    &   \textbf{70.1\%}    &   \textbf{60.0\%}     \\
+
  \hline
 \end{tabular}
 \caption{Performance comparison of models with and without our proposed mean-shift approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Wiki} corpus.}
@@ -457,11 +477,13 @@ Skip-Gram+RC  &     \textbf{70.5\%}    &    \textbf{21.3\%}      &    35.9\%   &
 \label{my-label}
 \begin{tabular}{@{}c|cccc|cccccc|c@{}}
 \hline
-Model & \begin{tabular}[c]{@{}c@{}}Capital-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency-\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City-\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective-\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality-\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
+Model & \begin{tabular}[c]{@{}c@{}}Capital\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}Currency\\Country\end{tabular} & \begin{tabular}[c]{@{}c@{}}City\\State\end{tabular} & Family & \begin{tabular}[c]{@{}c@{}}Adjective\\Adverb\end{tabular} & Opposite & Superlative &  \begin{tabular}[c]{@{}c@{}}Nationality\\Adjective\end{tabular} & Past-tense & Plural & Total \\ \hline
 CBOW  & 33.5\%  & 16.4\%   & 14.7\% & \textbf{79.7\%} & 13.9\% & \textbf{20.3\%} & 42.3\% & 65.4\% & 30.3\% & 44.7\% & 39.5\% \\
-CBOW+RC    &    35.3\%     &    17.5\%      &    15.8\%    &    78.4\%    &   14.9\%     &    19.9\%  &    42.3\%   &    64.9\%   &    31.0\%    &     45.3\%   & 39.8\%        \\
-Skip-Gram &    47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    \textbf{15.1\%}    &   15.4\%     &   40.1\%     &    77.8\%    &   32.9\%     &    48.3\%    &    43.0\%   \\
-Skip-Gram+RC  &     \textbf{47.8\%}    &    \textbf{21.6\%}      &    \textbf{23.1\%}   &     63.4\%   &    \textbf{15.1\%}     &   15.0\%     &   \textbf{42.7\%}    &     \textbf{77.9\%}   &    \textbf{33.0\%}    &   \textbf{49.3\%}    &   \textbf{43.3\%}     \\
+CBOW $CosMS$   &    35.3\%     &    17.5\%      &    15.8\%    &    78.4\%    &   14.9\%     &    19.9\%  &    42.3\%   &    64.9\%   &    31.0\%    &     45.3\%   & 39.8\%        \\
+CBOW $CosMS+$   &    35.5\%     &    16.4\%      &    16.3\%    &    79.4\%    &   14.4\%     &    19.0\%  &    44.1\%   &    64.9\%   &    30.3\%    &     46.1\%   & 40.0\%        \\
+Skip-Gram &    47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    15.1\%    &   15.4\%     &   40.1\%     &    77.8\%    &   32.9\%     &    48.3\%    &    43.0\%   \\
+Skip-Gram+RC  &     47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\%   &    15.1\%     &   15.0\%     &   42.7\%    &     77.9\%   &    33.0\%    &   \textbf{49.3\%}    &   43.3\%    \\
+Skip-Gram $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   &     65.4\%   &    \textbf{15.5\%}    &   16.0\%   &   \textbf{43.9\%}    &     \textbf{78.4\%}   &    \textbf{33.9\%}    &   47.7\%    &   \textbf{44.0\%}     \\
  \hline
 \end{tabular}
 \caption{Performance comparison of models with and without our proposed mean-shift approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Text8} corpus.}
