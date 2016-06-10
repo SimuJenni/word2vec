@@ -7,9 +7,12 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{caption}
-\usepackage{subcaption}
+%\usepackage{subcaption}
+\usepackage{subfig}
 
 \graphicspath{{images/}}
+
+
 
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
@@ -232,18 +235,35 @@ unit vectors when using the cosine similarity.
 \label{sec:sim}
 In our experiments we considered the following similarity measures:
 \begin{equation}
-	L^2(x,y) = -||x-y|| = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
+	L^2(x,y) = -||x-y||_2 = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
 \end{equation}
 \begin{equation}
 	L^1(x,y) = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
 \end{equation}
 \begin{equation}
-	Dice(x,y) = \frac{x\cdot y}{||x|| + ||y||}
+	Dice(x,y) = \frac{xT y}{||x|| + ||y||}
 \end{equation}
 \begin{equation}
-	Cos(x,y) = \frac{x\cdot y}{||x|| \cdot ||y||}
+	Cos(x,y) = \frac{x^T y}{||x|| \cdot ||y||}
 \end{equation}
 We denote the approach in Equation \ref{eq:anal2} with cosine similarity by $cosAdd$ in the results.
+
+
+\begin{figure*}[t]
+\centering
+\subfloat[Nearby points in the right are difficult to discriminate]{\includegraphics[width=0.25\linewidth]{meanshift1}
+\label{a}}
+\hfil
+\subfloat[Shifting by the mean.]{\includegraphics[width=0.25\linewidth]{meanshift2}%
+\label{b}}
+\hfil
+\subfloat[Reprojecting on the unit sphere.]{\includegraphics[width=0.25\linewidth]{meanshift3}%
+\label{c}}
+\hfil
+\subfloat[Better discrimination of points]{\includegraphics[width=0.22\linewidth]{meanshift4}%
+\label{d}}
+\caption{Sketch of the proposed mean-shift procedure in 2D. Consider the analogy "\textit{Yellow} is to \textit{Green} as \textit{Orange} is to ?". \textit{a)}: Unit sphere with projected vectors in respective colors. The points on the right are relatively close together and difficult to distinguish. \textit{b)}: The mean of all the points is computed and the centre of the sphere shifted. \textit{c)}: The re-projections of the points on the shifted sphere. \textit{d)}: The points are now farther apart and better distinguishable.}\label{fig_sim}
+\end{figure*}
 
 
 \subsection{Mean-Shift for Better Discrimination}
@@ -262,12 +282,6 @@ We therefore propose the following mean-shift procedure:
 
 The intuition behind this procedure is depicted in Figure \ref{fig:rc} which demonstrates how points very close by get distributed out. Note that the word arithmetic to compute the query vector is performed after the normalisation (otherwise no change in the results would be expected). We denote this approach with $CosMS$ in our experiments.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.4\textwidth]{recenter}
-\caption{Sketch of the proposed mean-shift procedure in 2D. \textit{Left}: Unit sphere with projected vectors in red. The points on the right are relatively close together. The mean of the red points is indicated in blue. \textit{Right}: The shifted and reprojected points. The points are now farther apart and better distinguishable.}
-\label{fig:rc}
-\end{figure}
 
 \subsection{Combining Analogy Interpretations}
 We have already touched upon the idea that there are different ways of interpreting analogy exercises with respect to some similarity measure in Subsection \ref{sec:arithm}. The idea for Equation \ref{eq:anal2} for example is that we are looking for the vector $v$ most similar to $x$ and $u$ but dissimilar to $y$. We could however also pose it as looking for 
@@ -421,7 +435,7 @@ In cases when the model gives the wrong answer, the common definition of accurac
 We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}. It is clearly observable that the accuracy increases dramatically when changing from $k=1$ to $2$ or $3$ and only slowly starts saturating at around $k>10$. This suggests that the prediction is in fact not far off most of the time and suggests that small modifications to the similarity computations (such as the mean-shift) might have a positive effect on the performance. We also notice how models trained on larger corpora saturate faster and that the difference in performance between CBOW and Skip-Gram is more apparent in models trained on small corpora.
 %TODO: Numbers guessed using the graph, may not be accurate
 
-\subsection{Distance Functions}
+\subsection{Similarity Meausres}
 To compare the different similarity measures introduced in Subsections \ref{sec:sim} and  \ref{sec:ms} we show results on selected categories of the generalised analogy dataset \cite{mikolov2013efficient} obtained with the baseline Skip-Gram model with parameters shown in Table \ref{tab:baseline}. 
 The resulting accuracies are listed in Table \ref{tab:dists}. 
 
@@ -445,7 +459,7 @@ $Dice$      &    42.8\%     &    20.5\%      &    19.5\%    &    65.0\%    &   1
 $L^2$        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    15.2\%    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
 $L^1$ &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%    &   8.8\%     &   25.7\%     &    72.8\%    &   24.8\%     &    36.2\%    &    36.1\%   \\
 $CosMul$   &        43.4\%    &    20.5\%     &    20.6\%   &     56.5\%   &    13.2\%    &   11.8\%     &   39.7\%    &     73.5\%   &    28.6\%   &   39.9\%   &   39.5\%     \\
-$CosMS$   &        47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\%   &    15.1\%    &   15.0\%     &   \textbf{42.7\%}    &     77.9\%   &    33.0\%    &   \textbf{49.3\%}    &   43.3\%     \\
+$CosMS$   &        47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\%   &    15.1\%    &   15.0\%     &   42.7\%    &     77.9\%   &    33.0\%    &   \textbf{49.3\%}    &   43.3\%     \\
 $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   &     \textbf{65.4\%}   &    \textbf{15.5\%}    &   \textbf{16.0\%}     &   \textbf{43.9\%}    &     78.4\%   &    \textbf{33.9\%}    &   47.7\%    &   \textbf{44.0\%}     \\
  \hline
 \end{tabular}
