@@ -43,11 +43,11 @@
 % affiliations
 \author{\IEEEauthorblockN{Simon Jenni}
 \IEEEauthorblockA{University of Bern\\
-Email: simujenni@students.unibe.ch}
+simujenni@students.unibe.ch}
 \and
 \IEEEauthorblockN{Simon Brulhart}
 \IEEEauthorblockA{University of Fribourg\\
-Email: simon.brulhart@unifr.ch}
+simon.brulhart@unifr.ch}
 }
 
 
@@ -87,7 +87,7 @@ Recent state-of-the-art natural language models represent words by embedding the
 as vectors in a continuous vector space \cite{mikolov2013efficient} \cite{pennington2014glove}.
 These embeddings are learned as weights of a recurrent neural network language model.
 It has been demonstrated that the distributed representation of words as vectors
-in a common vector-space captures not just syntactic similarities (e.g. $cat$
+in a common vector-space captures not just syntactic similarities (\textit{e.g.} $cat$
 is close to $cats$) but semantic similarities as well. Concretely, the model's ability to
 perform "word-arithmetic" has been shown in \cite{mikolov2013linguistic}.
 To exemplify this, let $f$ be the word-embedding function. Ideally, we would then
@@ -108,11 +108,11 @@ generating questions that test relationships such as $Brand \thicksim Country$
 and $Movie \thicksim Director$. Previous work focuses on the nearest 
 resulting vector in the embedding space when evaluating the accuracy of this word-arithmetic. 
 We generalise the notion of accuracy by considering not only the nearest word-vector, but 
-consider the set of the $k$ nearest vectors and test wether the target word is present therein. 
+consider the set of the $k$ nearest vectors and test whether the target word is present therein. 
 
 
 The content of this paper is structured as follows: Section \ref{sec:relwork} gives an overview 
-of relevant previous work. In Section \ref{sec:model} we present a brief overview of the underlying 
+of relevant previous works. In Section \ref{sec:model} we present a brief overview of the underlying 
 model and in Section \ref{sec:exp} we outline the experimental setup and testdata used. 
 The results of the experiments are then reported in Section \ref{sec:res} before we conclude
 in \ref{sec:end}.
@@ -149,7 +149,7 @@ a list of \textit{Harry Potter} characters.
 \centering
 \includegraphics[width=0.375\textwidth]{cbow}
 \caption{Architecture of the CBOW model. The three one-hot input vectors represent the context 
-of a centre-word in a sentence and the output vector is a vector with probabilities over possible 
+of a centre word in a sentence and the output vector is a vector with probabilities over possible 
 centre-words. }
 \label{fig:cbow}
 \end{figure}
@@ -264,14 +264,14 @@ We denote the approach in Equation \ref{eq:anal2} with cosine similarity by $cos
 \hfil
 \subfloat[Better discrimination of points]{\includegraphics[width=0.22\linewidth]{meanshift4}%
 \label{d}}
-\caption{Sketch of the proposed mean-shift procedure in 2D. Consider the analogy "\textit{Yellow} is to \textit{Green} as \textit{Orange} is to ?". \textit{a)}: Unit sphere with projected vectors in respective colors. The points on the right are relatively close together and difficult to distinguish. \textit{b)}: The mean of all the points is computed and the centre of the sphere shifted. \textit{c)}: The re-projections of the points on the shifted sphere. \textit{d)}: The points are now farther apart and better distinguishable.}
+\caption{Sketch of the proposed mean-shift procedure in 2D. Consider the analogy "\textit{Yellow} is to \textit{Green} as \textit{Orange} is to ?". \textit{a)}: Unit sphere with projected vectors in respective colours. The points on the right are relatively close together and difficult to distinguish. \textit{b)}: The mean of all the points is computed and the centre of the sphere shifted. \textit{c)}: The re-projections of the points on the shifted sphere. \textit{d)}: The points are now farther apart and better distinguishable.}
 \label{fig:ms}
 \end{figure*}
 
 
 \subsection{Mean-Shift for Better Discrimination}
 \label{sec:ms}
-Solving for the closest word in Equation \ref{eq:sim} based on the cosine similarity can be interpreted as projecting on an $N$-dimensional unit sphere and looking for the projected vector with smallest  angle to the given query vector. This projection can lead to similar vectors being very close on the sphere and therefore hard to distinguish based on angular distance. This observation is also backed up by the plots shown Figure \ref{fig:knn} where we observe that the correct word is often very close by. Being able to better distribute out the the points on the sphere would therefore likely improve the predictions. 
+Solving for the closest word in Equation \ref{eq:sim} based on the cosine similarity can be interpreted as projecting on an $N$-dimensional unit sphere and looking for the projected vector with smallest  angle to the given query vector. This projection can lead to similar vectors being very close on the sphere and therefore hard to distinguish based on angular distance. This observation is also backed up by the plots shown Figure \ref{fig:knn} where we observe that the correct word is often very close by. Being able to better distribute out the points on the sphere would therefore likely improve the predictions. 
 
 We therefore propose the following mean-shift procedure:
 \begin{enumerate}
@@ -295,7 +295,7 @@ that is $x$ and $y$ should have the same similarity as $u$ and $v$. Yet another 
 \begin{equation}
 	v = \underset{v \in f(V)}{\text{argmin }}  |d(x, u)-d(y, v)|.
 \end{equation}
-Note that these objectives all capture different aspects of the analogy, i.e. they are not implying each other. We propose to combine these objectives in a weighted sum of these terms. Let $\phi$ denote the term in Equation \ref{eq:anal2}, i.e.
+Note that these objectives all capture different aspects of the analogy, \textit{i.e.} they are not implying each other. We propose to combine these objectives in a weighted sum of these terms. Let $\phi$ denote the term in Equation \ref{eq:anal2}, \textit{i.e.}
 \begin{equation}
 	\phi(v)=d(v, u) - d(v, x) + d(v, y).
 \end{equation}
@@ -323,7 +323,7 @@ with different values for one of the parameters and keep all other parameters fi
 identified the following set of parameters for our experiments:
 \begin{enumerate}
 \item Context-window size
-\item Vector size (i.e dimension of hidden-layer)
+\item Vector size (\textit{i.e.} dimension of hidden-layer)
 \item Learning rate $\alpha$
 \item Training corpus
 \item Hierarchical softmax vs. negative sampling for Skip-Gram
@@ -346,7 +346,7 @@ English corpus of one million words assembled from 500 sources of different genr
 It is considerably smaller than our other corpora.
 We used this set through the NLTK python library.
 \footnote{See http://www.nltk.org/book/ch02.html}
-%TODO: Would it be better to use reference(s) instead of footnotes, at least for some of them?
+%TODO talk about movie reviews and treebank
 
 \subsection{New Test Data}
 To test the models performance on domain-specific questions we constructed several 
@@ -381,7 +381,7 @@ starting with "The ..." or similar.  The result is a set of 4,557 questions.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{graph_acc_size}
-\caption{Accuracy for different values of vector-size (i.e. dimension of embedding space). }
+\caption{Accuracy for different values of vector-size (\textit{i.e.} dimension of embedding space). }
 \label{fig:size}
 \end{figure}
 
@@ -427,7 +427,7 @@ However, a learning rate around 0.007 - 0.03 yields good results for every model
 From a broader perspective, we observe that the corpus size is by far what influences performance the most. This is not surprising given 
 that neural networks are dependent on large amounts of training data. This is especially apparent when looking at the models trained on the $Brown$ corpus, which all fail to get reasonable accuracies.
 
-Considering the choice of model architecture we also notice that  Skip-Gram slightly outperforms CBOW in most cases. It should be noted however that the Skip-Gram model s slightly more complex to train.
+Considering the choice of model architecture we also notice that  Skip-Gram slightly outperforms CBOW in most cases. It should be noted however that the Skip-Gram model is slightly more complex to train.
 
 
 \begin{figure}[t]
@@ -461,11 +461,11 @@ $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   & 
 \label{tab:dists}
 \end{table*}
 
-\subsection{Similarity Meausres}
+\subsection{Similarity Measures}
 To compare the different similarity measures introduced in Subsections \ref{sec:sim} and  \ref{sec:ms} we show results on selected categories of the generalised analogy dataset \cite{mikolov2013efficient} obtained with the baseline Skip-Gram model with parameters shown in Table \ref{tab:baseline}. 
 The resulting accuracies are listed in Table \ref{tab:dists}. 
 
-We observe that overall cosine similarities perform significantly better than the other similarity measures (with a few exceptions). Possible explanations for this circumstance are difficult to provide. For one we note that that the Euclidean distance between weight-vectors are never explicitly used  in the training of the model. In fact, the weight vectors only occur in dot-products with the columns of the hidden-to-out weight matrix $\boldsymbol{W'}$. Another explanation is that the norm of a word vector is related to the word-frequency as found by \cite{Schakel:2015aa} and is therefore not directly helpful in the analogy task.
+We observe that overall cosine similarities perform significantly better than the other similarity measures (with a few exceptions). Possible explanations for this circumstance are difficult to provide. For one we note that the Euclidean distance between weight-vectors are never explicitly used in the training of the model. In fact, the weight vectors only occur in dot-products with the columns of the hidden-to-out weight matrix $\boldsymbol{W'}$. Another explanation is that the norm of a word vector is related to the word-frequency as found by \cite{Schakel:2015aa} and is therefore not directly helpful in the analogy task.
 
 \subsection{Mean Shift and Combination of Analogy Interpretations }
 Tables \ref{tab:msWiki} and \ref{tab:mst8} show results comparing models with and without the proposed mean-shift and combination of analogy interpretations. Results for the models with mean-shift are indicated with \textit{CosMS}. We observe a slight overall improvement of models with mean-shift compared to the standard model for all the models. 
@@ -490,8 +490,8 @@ Results for the domain specific questions will go here...
 	3 & 37.11\% & 9.33\% & 28.50\% & 5.42\% \\
 	10 & 30.21\% & 9.39\% & 22.45\% & 5.45\% \\ \hline
 \end{tabular}
-	\caption{Accuracy of models trained again with \textit{treebank} corpus against Country-Brand questions}
-	\label{table_accu_treebank}
+	\caption{Accuracy of models trained again with \textit{treebank} corpus against Brand-Origin questions}
+	\label{tab:accu_treebank}
 \end{table}
 
 
@@ -508,7 +508,7 @@ Results for the domain specific questions will go here...
 	10 & 6.28\% & 0.80\% & 5.28\% & 0.54\% \\ \hline
 \end{tabular}
 	\caption{Accuracy of models trained again with \textit{movie\_reviews} corpus against Movie-Director questions}
-	\label{table_accu_movie_reviews}
+	\label{tab:accu_movie_reviews}
 \end{table}
 
 \begin{table*}[t]
@@ -564,8 +564,8 @@ TODO: S. Brulhart
 
 \subsection{Conclusion}
 
-In this work we studied the influence of several parameter choices on the performance of the word2vec models.
-We found that the the learning rate $\alpha$, the size of the hidden layer and the choice of architecture are critical while the window size has not shown to affect the performance significantly. Not surprisingly however, the size of the training corpus has shown to be the most important  factor on the performance of the model. By analysing the k-NN accuracy we observed that the model's guesses are usually very close to the correct answer.
+In this work we studied the influence of several parameter choices on the performance of word2vec models.
+We found that the learning rate $\alpha$, the size of the hidden layer and the choice of architecture are critical while the window size has not shown to affect the performance significantly. Not surprisingly however, the size of the training corpus has shown to be the most important factor on the performance of the model. By analysing the k-NN accuracy we observed that the model's guesses are usually very close to the correct answer.
 
 In a comparison of different similarity measures we verified the superiority of the cosine similarity over other alternatives. We proposed to use mean-shift and a combination of analogy interpretations and showed how they lead to improvements in accuracy.
 
