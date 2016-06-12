@@ -9,6 +9,7 @@
 \usepackage{caption}
 %\usepackage{subcaption}
 \usepackage{subfig}
+\usepackage{multirow}
 
 \graphicspath{{images/}}
 
@@ -479,35 +480,35 @@ Results for the domain specific questions will go here...
 
 \begin{table}[]
 	\centering
-	\caption{Accuracy of models re-trained with treebank against brand questions}
-	\label{table_accu_treebank}
-\begin{tabular}{l|cc|cc}
+\begin{tabular}{c|cc|cc}
 	\hline
-	Iterations & \multicolumn{2}{c|}{wiki} & \multicolumn{2}{c|}{text8} \\ \hline
-	& General   & Specialized   & General    & Specialized   \\ \hline
-	0          & 57.80\%   & 9.62\%        & 43.28\%    & 5.65\%        \\
-	1          & 50.72\%   & 9.51\%        & 36.97\%    & 5.55\%        \\
-	2          & 40.43\%   & 9.44\%        & 31.84\%    & 5.53\%        \\
-	3          & 37.11\%   & 9.33\%        & 28.50\%    & 5.42\%        \\
-	10         & 30.21\%   & 9.39\%        & 22.45\%    & 5.45\%        \\ \hline
+	\multicolumn{1}{l|}{} & \multicolumn{2}{c|}{wiki} & \multicolumn{2}{c}{text8} \\ \cline{2-5} 
+	\multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Training\\ iterations\end{tabular}} & \begin{tabular}[c]{@{}c@{}}General\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}Specific\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}General\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}Specific\\ questions\end{tabular} \\ \hline
+	0 & \textbf{57.80\%} & \textbf{9.62\%} & \textbf{43.28\%} & \textbf{5.65\%} \\
+	1 & 50.72\% & 9.51\% & 36.97\% & 5.55\% \\
+	2 & 40.43\% & 9.44\% & 31.84\% & 5.53\% \\
+	3 & 37.11\% & 9.33\% & 28.50\% & 5.42\% \\
+	10 & 30.21\% & 9.39\% & 22.45\% & 5.45\% \\ \hline
 \end{tabular}
+	\caption{Accuracy of models trained again with \textit{treebank} corpus against Country-Brand questions}
+	\label{table_accu_treebank}
 \end{table}
 
 
 \begin{table}[]
 	\centering
-	\caption{Accuracy of models re-trained with movies reviews against brand questions}
-	\label{table_accu_movie_reviews}
-\begin{tabular}{l|cc|cc}
+\begin{tabular}{c|cc|cc}
 	\hline
-	Iterations & \multicolumn{2}{c|}{wiki} & \multicolumn{2}{c|}{text8} \\ \hline
-	& General   & Specialized   & General    & Specialized   \\ \hline
-	0          & 57.80\%   & 2.32\%        & 43.27\%    & 1.18\%        \\
-	1          & 32.96\%   & 1.52\%        & 24.75\%    & 2.26\%        \\
-	2          & 20.15\%   & 1.07\%        & 14.97\%    & 1.51\%        \\
-	3          & 14.42\%   & 0.89\%        & 11.26\%    & 1.40\%        \\
-	10         & 6.28\%    & 0.80\%        & 5.28\%     & 1.29\%        \\ \hline
+	\multicolumn{1}{l|}{} & \multicolumn{2}{c|}{wiki} & \multicolumn{2}{c}{text8} \\ \cline{2-5} 
+	\multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Training\\ iterations\end{tabular}} & \begin{tabular}[c]{@{}c@{}}General\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}Specific\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}General\\ questions\end{tabular} & \begin{tabular}[c]{@{}c@{}}Specific\\ questions\end{tabular} \\ \hline
+	0 & \textbf{57.80\%} & \textbf{2.32\%} & \textbf{43.27\%} & 1.18\% \\
+	1 & 32.96\% & 1.52\% & 24.75\% & \textbf{2.26\%} \\
+	2 & 20.15\% & 1.07\% & 14.97\% & 1.51\% \\
+	3 & 14.42\% & 0.89\% & 11.26\% & 1.40\% \\
+	10 & 6.28\% & 0.80\% & 5.28\% & 0.54\% \\ \hline
 \end{tabular}
+	\caption{Accuracy of models trained again with \textit{movie\_reviews} corpus against Movie-Director questions}
+	\label{table_accu_movie_reviews}
 \end{table}
 
 \begin{table*}[t]
