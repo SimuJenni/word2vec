@@ -397,7 +397,7 @@ For this purpose we plotted the accuracy obtained for different values of a chos
 The baseline model for the comparison (with default parameter values) is shown in Table \ref{tab:baseline} .
 Here, the accuracy is defined as the ratio of the number of right answers over the total number of questions.
 
-\begin{table}[h]
+\begin{table}[b]
 \centering
 \begin{tabular}{@{}c|c|c|c@{}}
 \hline
@@ -469,13 +469,13 @@ We observe that overall cosine similarities perform significantly better than th
 \subsection{Mean Shift and Combination of Analogy Interpretations }
 Tables \ref{tab:msWiki} and \ref{tab:mst8} show results comparing models with and without the proposed mean-shift and combination of analogy interpretations. Results for the models with mean-shift are indicated with \textit{CosMS}. We observe a slight overall improvement of models with mean-shift compared to the standard model for all the models. 
 
-Models with the additional term of alternative analogy interpretations from Equation \ref{eq:alt} are depicted with \textit{CosMS+}. This has shown further slightly improve the accuracy of the model.
+Models with the additional term of alternative analogy interpretations from Equation \ref{eq:alt} are depicted with \textit{CosMS+}. This has shown to further slightly improve the accuracy of the model.
 
 
 \subsection{Domain Specific Questions}
+TODO: S. Brulhart
+
 Results for the domain specific questions will go here...
-
-
 
 
 \begin{table*}[t]
@@ -514,6 +514,30 @@ Skip-Gram $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24
 \caption{Performance comparison of models with and without our proposed mean-shift approach. Results obtained on the generalised question set of \cite{mikolov2013efficient} with models trained on the \textit{Text8} corpus.}
 \label{tab:mst8}
 \end{table*}
+
+
+
+
+\section{Discussion}
+
+\subsection{Limitations}
+TODO: S. Brulhart
+
+
+
+\subsection{Future Work}
+TODO: S. Brulhart
+
+
+\subsection{Conclusion}
+
+In this work we studied the influence of several parameter choices on the performance of the word2vec models.
+We found that the the learning rate $\alpha$, the size of the hidden layer and the choice of architecture are critical while the window size has not shown to affect the performance significantly. Not surprisingly however, the size of the training corpus has shown to be the most important  factor on the performance of the model. By analysing the k-NN accuracy we observed that the model's guesses are usually very close to the correct answer.
+
+In a comparison of different similarity measures we verified the superiority of the cosine similarity over other alternatives. We proposed to use mean-shift and a combination of analogy interpretations and showed how they lead to improvements in accuracy.
+
+\label{sec:end}
+
 
 
 % An example of a floating figure using the graphicx package.
@@ -609,16 +633,6 @@ Skip-Gram $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
-
-
-
-
-\section{Conclusion}
-\label{sec:end}
-
-The conclusion goes here.
-
-
 
 
 % conference papers do not normally have an appendix
