@@ -220,13 +220,13 @@ for the words occurring in the context of the input word.}
 \label{sec:arithm}
 Consider the case of an analogy question "$X$ is to $Y$ as $U$ is to $V$" where we are interested in solving for the word $V$. Let $x=f(X)$, $y=f(Y)$ and $u=f(U)$ be the embedded words. The straightforward way of computing $v=f(V)$ is then to use Equation \ref{eq:sim} and solving for 
 \begin{equation}
-	v = \underset{v \in f(V)}{\text{argmax }}  d(v, x-y+u)
+	v = \underset{v \in f(V)}{\text{argmax }}  d(v, u-x+y)
 	\label{eq:anal}
 \end{equation}
 
 As it turns out however depending on the similarity measure $d(\cdot|\cdot)$ it can be a good idea to consider different approaches such as 
 \begin{equation}
-	v =  \underset{v \in f(V)}{\text{argmax }}  d(v, x) - d(v, y) + d(v, u)
+	v =  \underset{v \in f(V)}{\text{argmax }}  d(v, u) - d(v, x) + d(v, y)
 	\label{eq:anal2}
 \end{equation}
 The intuition behind this approach is less one of performing word-vector arithmetic and more one of finding the word $V$ most similar to $X$ and $U$ and dissimilar to $Y$. This approach turns out to work considerably better when using the cosine-similarity. Note that  Equations \ref{eq:anal} and  \ref{eq:anal2} are equivalent for 
@@ -296,7 +296,7 @@ that is $x$ and $y$ should have the same similarity as $u$ and $v$. Yet another 
 \end{equation}
 Note that these objectives all capture different aspects of the analogy, i.e. they are not implying each other. We propose to combine these objectives in a weighted sum of these terms. Let $\phi$ denote the term in Equation \ref{eq:anal2}, i.e.
 \begin{equation}
-	\phi(v)=d(v, x) - d(v, y) + d(v, u).
+	\phi(v)=d(v, u) - d(v, x) + d(v, y).
 \end{equation}
 We then want to maximise  the following expression:
 \begin{equation}
