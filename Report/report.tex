@@ -230,7 +230,7 @@ As it turns out however depending on the similarity measure $d(\cdot|\cdot)$ it 
 	v =  \underset{v \in f(V)}{\text{argmax }}  d(v, u) - d(v, x) + d(v, y)
 	\label{eq:anal2}
 \end{equation}
-The intuition behind this approach is less one of performing word-vector arithmetic and more one of finding the word $V$ most similar to $X$ and $U$ and dissimilar to $Y$. This approach turns out to work considerably better when using the cosine-similarity. Note that  Equations \ref{eq:anal} and  \ref{eq:anal2} are equivalent for 
+The intuition behind this approach is less one of performing word-vector arithmetic and more one of finding the word $V$ most similar to $Y$ and $U$ and dissimilar to $X$. This approach turns out to work considerably better when using the cosine-similarity. Note that  Equations \ref{eq:anal} and  \ref{eq:anal2} are equivalent for 
 unit vectors when using the cosine similarity.
 
 \subsection{Considered Similarity Measures}
@@ -240,13 +240,13 @@ In our experiments we considered the following similarity measures:
 	L^2(x,y) = -||x-y||_2 = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
 \end{equation}
 \begin{equation}
-	L^1(x,y) = -\sqrt{\sum_{i=1}^{n}{(x_i-y_i)^2}} 
+	L^1(x,y) = -{\sum_{i=1}^{n}{|(x_i-y_i)|}} 
 \end{equation}
 \begin{equation}
-	Dice(x,y) = \frac{xT y}{||x|| + ||y||}
+	Dice(x,y) = \frac{2x^T y}{||x||_2^2 + ||y||_2^2}
 \end{equation}
 \begin{equation}
-	Cos(x,y) = \frac{x^T y}{||x|| \cdot ||y||}
+	Cos(x,y) = \frac{x^T y}{||x||_2 \cdot ||y||_2}
 \end{equation}
 We denote the approach in Equation \ref{eq:anal2} with cosine similarity by $cosAdd$ in the results.
 
@@ -398,21 +398,13 @@ starting with "The ..." or similar.  The result is a set of 4,557 questions.
 \end{figure}
 
 \subsection{Influence of Parameters on Model Performance}
+\label{sec:baseline}
 We first evaluate the influence of parameter choices using Google's generalised analogy dataset described in \cite{mikolov2013efficient}.
 For this purpose we plotted the accuracy obtained for different values of a chosen parameter, while keeping all other parameters fixed. 
-The baseline model for the comparison (with default parameter values) is shown in Table \ref{tab:baseline} .
+The baseline model for the comparison is a Skip-Gram model with a learning rate $\alpha=0.025$, window size of 5 and vector size equal to 100. 
 Here, the accuracy is defined as the ratio of the number of right answers over the total number of questions.
 
-\begin{table}[b]
-\centering
-\begin{tabular}{@{}c|c|c|c@{}}
-\hline
-\begin{tabular}[c]{@{}c@{}}Model- \\ Architecture \end{tabular} & \begin{tabular}[c]{@{}c@{}}Learning \\Rate $\alpha$\end{tabular}  & \begin{tabular}[c]{@{}c@{}}Window-\\ Size\end{tabular} & \begin{tabular}[c]{@{}c@{}}Vector-\\ Size\end{tabular} \\ \hline 
-Skip-Gram &	0.025 	& 	5 	& 100	\\ \hline
-\end{tabular}
-\caption{The parameter values for the baseline model used in our experiments. }
-\label{tab:baseline}
-\end{table}
+
 
 In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
 It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
@@ -480,7 +472,7 @@ Models with the additional term of alternative analogy interpretations from Equa
 
 \subsection{Domain Specific Questions}
 We evaluated how well word2vec models built from a large-scope corpus could answer domain specific questions.
-For this purpose we used the baseline model with parameters shown in Table \ref{tab:baseline}, using either the \textit{wiki} or \textit{text8} corpus.
+For this purpose we used the baseline model described in Section \ref{sec:baseline}, using either the \textit{wiki} or \textit{text8} corpus.
 We then measured the mean-shift accuracy of these models against the Brand-Origin and Movie-Director questions sets.
 
 We also tried updating the existing models by training them using corpora closer related to the questions domains. We re-trained the models using the \textit{treebank} and \textit{movie\_reviews} corpora to answer Brand-Origin and Movie-Director questions, respectively.
