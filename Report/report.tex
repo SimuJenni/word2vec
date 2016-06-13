@@ -491,7 +491,7 @@ An explanation for this result is that many movie titles are made of common word
 cited in numerous different context. On the other hand,
 a movie's title and director may be mentioned too far from each other in the corpus to fit in the window size.
 
-Note that for both questions sets, the accuracy increases significantly with a bigger model.
+Note that for both questions sets, the accuracy increases significantly with a larger model.
 This improvement is more important for specialized questions than for general ones.
 
 
@@ -578,12 +578,32 @@ Skip-Gram $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24
 \section{Discussion}
 
 \subsection{Limitations}
-TODO: S. Brulhart
+%TODO: Talk about combination of parameters variation?
+All of our experiments were based on small word2vec models,
+relatively to the size of models often used in practice.
+We could observe the importance of the model size on our results,
+suggesting this would also be the case with larger models.
+Likewise we used corpora of multiple kinds through this work,
+but the only large corpora (\textit{text8} and \textit{wiki}) are based on the same material.
 
+Moreover, experimenting with two novel sets of questions seems insufficient to conclude on models performance on specific domains.
+We also observe how counter-productive re-training can be, but this could be anecdotal.
+This would be clearer if we tried updating the original model with a model of similar size.
+We could compare the accuracy of both models individually and mixed together.
+Then we would know if bad results are caused by the re-training itself,
+or simply one of the model performing significantly worse than the other.
+
+Lastly, we could not find a convincing theoretical explanation for the performance difference between similarity measures. Understanding the cause of such a difference would help find better measures. 
 
 
 \subsection{Future Work}
-TODO: S. Brulhart
+As explained in the previous section,
+it would be interesting to train and evaluate models on much larger corpora to confirm the tendencies we exposed.
+In particular, we need to check if improvements from mean-shift and the combination of interpretations translate to bigger models.
+
+We want to work on ways to explicitly train models with the goal of querying for analogies and similarities in mind.
+
+Finally we want to compare the performance of word2vec against other tools such as GloVe\footnote{Global Vectors for Word Representation} and recurrent neural networks.
 
 
 \subsection{Conclusion}
