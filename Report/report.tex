@@ -479,9 +479,28 @@ Models with the additional term of alternative analogy interpretations from Equa
 
 
 \subsection{Domain Specific Questions}
-TODO: S. Brulhart
+We evaluated how well word2vec models built from a large-scope corpus could answer domain specific questions.
+For this purpose we used the baseline model with parameters shown in Table \ref{tab:baseline}, using either the \textit{wiki} or \textit{text8} corpus.
+We then measured the mean-shift accuracy of these models against the Brand-Origin and Movie-Director questions sets.
 
-Results for the domain specific questions will go here...
+We also tried updating the existing models by training them using corpora closer related to the questions domains. We re-trained the models using the \textit{treebank} and \textit{movie\_reviews} corpora to answer Brand-Origin and Movie-Director questions, respectively.
+
+Table \ref{tab:accu_treebank} and \ref{tab:accu_movie_reviews} show that the baseline large-scope model performs much worse on our domain-specific questions than on the generalised analogy dataset \cite{mikolov2013efficient},
+in particular for movie related questions.
+An explanation for this result is that many movie titles are made of common words,
+cited in numerous different context. On the other hand,
+a movie's title and director may be mentioned too far from each other in the corpus to fit in the window size.
+
+Note that for both questions sets, the accuracy increases significantly with a bigger model.
+This improvement is more important for specialized questions than for general ones.
+
+
+Updating existing models with more specific corpora worsened their accuracy in most cases. Applying this training multiple times amplified the effect.
+It also harmed the models accuracy against the generalised analogy dataset.
+However the \textit{treebank} and \textit{movie\_reviews} corpora are smaller than the original ones by orders of magnitude.
+Therefore we cannot generalise the counter-productivity of such a re-training based on our results.
+
+
 
 \begin{table}[]
 	\centering
