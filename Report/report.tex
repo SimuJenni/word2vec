@@ -248,6 +248,7 @@ In our experiments we considered the following similarity measures:
 \begin{equation}
 	Cos(x,y) = \frac{x^T y}{||x||_2 \cdot ||y||_2}
 \end{equation}
+Note how some similarity measures are constructed by taking the negative of the distance between two vectors w.r.t. some distance function (\textit{e.g.} Euclidean distance in case of $L^2$).
 We denote the approach in Equation \ref{eq:anal2} with cosine similarity by $cosAdd$ in the results.
 
 
@@ -304,7 +305,7 @@ We then want to maximise  the following expression:
 	\phi(v) - \lambda \cdot (|d(x, y)-d(u, v)| +   |d(x, u)-d(y, v)|)
 	\label{eq:alt}
 \end{equation}
-We set the weight parameter $\lambda = 0.1$ in our experiments and denote models using this similarity measure (including mean-shift) with $CosMS+$. 
+A value of $\lambda = 0.1$ for the weighting parameter has shown to perform well in our experiments (the model is quite robust to other choices for $\lambda$ though). We denote models using this similarity measure (including mean-shift) with $CosMS+$. 
 
 \section{Experiments}
 \label{sec:exp}
@@ -405,7 +406,6 @@ The baseline model for the comparison is a Skip-Gram model with a learning rate 
 Here, the accuracy is defined as the ratio of the number of right answers over the total number of questions.
 
 
-
 In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
 It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
 Generally the model is quite robust with respect to this parameter.
@@ -416,10 +416,9 @@ A larger value generally improves accuracy, although we get diminishing returns 
 This is not surprising as the vector size defines the complexity of the model and therefore also matters more for larger corpora.
 Obviously the vector size also has some effect on training time, so it is wise to restrain the vector size.
 
-The learning rate ($\alpha$) greatly affects performance as can be seen in Figure~\ref{fig:alpha}.
-There appears to be a critical spot for $\alpha$ around which the accuracy drops dramatically (values around 0.03 - 0.15). 
-However, a learning rate around 0.007 - 0.03 yields good results for every model we tried.
-%TODO: I ignored the case "text8, cbow", I suspect there was an issue when drawing the graph.
+The learning rate $\alpha$ greatly affects performance as can be seen in Figure~\ref{fig:alpha}.
+We observe that if we choose the learning rate too high (\textit{e.g.} above 0.03) the accuracy drops dramatically. The reason for this can be found in the gradient descent update rule, where a high value of $\alpha$ will make the gradients overshoot the minimum.
+However, learning rates around 0.007 - 0.03 yielded good results for all models in our experiments.
 
 From a broader perspective, we observe that the corpus size is by far what influences performance the most. This is not surprising given 
 that neural networks are dependent on large amounts of training data. This is especially apparent when looking at the models trained on the $Brown$ corpus, which all fail to get reasonable accuracies.
@@ -430,7 +429,7 @@ Considering the choice of model architecture we also notice that  Skip-Gram slig
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{graph_knn-acc}
-\caption{k-NN accuracy according to k.}
+\caption{Curve showing the $k$-NN accuracy for values of $k$ between 1 and 100. Note that the vocabulary size is 71,290 for the \textit{Text8}  and 218,316 for the \textit{Wiki} models.}
 \label{fig:knn}
 \end{figure}
 
@@ -595,7 +594,7 @@ In particular, we need to check if improvements from mean-shift and the combinat
 
 We want to work on ways to explicitly train models with the goal of querying for analogies and similarities in mind.
 
-Finally we want to compare the performance of word2vec against other tools such as GloVe\footnote{Global Vectors for Word Representation} and recurrent neural networks.
+Finally we want to compare the performance of word2vec against other tools such as GloVe\footnote{Global Vectors for Word Representation} \cite{pennington2014glove} and recurrent neural networks.
 
 
 \subsection{Conclusion}
