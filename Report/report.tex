@@ -421,8 +421,8 @@ This is not surprising as the vector size defines the complexity of the model an
 Obviously the vector size also has some effect on training time, so it is wise to restrain the vector size.
 
 The learning rate $\alpha$ greatly affects performance as can be seen in Figure~\ref{fig:alpha}.
-We observe that if we choose the learning rate too high (\textit{e.g.} above $2^{-5}$) the accuracy drops dramatically. The reason for this can be found in the gradient descent update rule, where a high value of $\alpha$ will make the gradients overshoot the minimum.
-However, learning rates around 0.007 - 0.03 yielded good results for all models in our experiments.
+We observe that if we choose the learning rate too high (\textit{e.g.} above $2^{-3.5}$) the accuracy drops dramatically. The reason for this can be found in the gradient descent update rule, where a high value of $\alpha$ will make the gradients overshoot the minimum.
+However, learning rates between ${2^{-5.5}}$ and ${2^{-4}}$ yielded good results for all models in our experiments.
 
 From a broader perspective, we observe that the corpus size is by far what influences performance the most. This is not surprising given 
 that neural networks are dependent on large amounts of training data. This is especially apparent when looking at the models trained on the $Brown$ corpus, which all fail to get reasonable accuracies.

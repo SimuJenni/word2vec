@@ -25,7 +25,7 @@ corpus, corpus_name = brown.sents(), 'brown'
 sg = 0   # if 1, Skip-Gram else CBOW
 parameters = [
     ('hs', [0, 1]),                              # if 1, hierarchical softmax else negative sampling
-    ('alpha', [2**x for x in range(-8, 1)]),     # learning rate
+    # ('alpha', [2**x for x in range(-8, 1)]),     # learning rate
     ('window', list(range(2, 13))),              # window size
     ('size', list(range(25, 301, 25)))           # vector size
 ]
@@ -49,15 +49,24 @@ def run_trainings():
             train(corpus, param, value)
 
 
-def train(corpus, param, value):
+def train_alphas():
+    for i in range(-8, -20, 5):
+        power = i / 10
+        train(corpus, 'alpha', 2**power, str(power))
+
+
+def train(corpus, param, value, pretty_value=None):
     """Compute, save and return word2vec model with `param` set to `value.`
 
     Only load the pre-computed model if it already exists on disk.
     """
+    if pretty_value is None:
+        pretty_value = str(value)
+
     default_params = dict(sentences=corpus, iter=10, workers=os.cpu_count(), sg=sg)
     # Note: cpu_count() also counts "logical" cores (Hyper-threading))
 
-    fname = '{}_{}_{}'.format(corpus_name, param, value)
+    fname = '{}_{}_{}'.format(corpus_name, param, pretty_value)
     folder = 'results_cbow' if sg == 0 else 'results_sg'
     dest_path = data_dir / folder / fname
     if dest_path.exists():
@@ -78,9 +87,13 @@ def train(corpus, param, value):
 def main():
     setup()
     global sg
+
     sg = 0
+    # train_alphas()
     run_trainings()
+
     sg = 1
+    # train_alphas()
     run_trainings()
 
 if __name__ == '__main__':

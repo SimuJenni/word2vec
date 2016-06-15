@@ -29,7 +29,6 @@ class Result(namedtuple('Result', ['corpus', 'parameter', 'value', 'skipgram', '
         except EOFError:
             return None
 
-
     @classmethod
     def parse_filename(cls, fpath):
         fpath = Path(fpath)
@@ -52,7 +51,10 @@ def plot_parameter_graph(parameter):
             continue
 
         if not xticks:
-            xticks = ['{:.3g}'.format(float(r.value)) for r in results]
+            if parameter == 'alpha':
+                xticks = ['${2^{%s}}$' % r.value for r in results]
+            else:
+                xticks = ['{:.3g}'.format(float(r.value)) for r in results]
             print(xticks)
 
         plot_values = []
@@ -70,8 +72,8 @@ def plot_parameter_graph(parameter):
         label = "corpus: {}, {}".format(corpus, skipgram_str)
         plt.plot(range(len(plot_values)), plot_values, label=label)
 
-
     plt.set_xticks(range(len(results)))
+    plt.set_xlim([0, len(results) - 1])  # avoid blank space
     plt.set_xticklabels(xticks)
     plt.set_xlabel(pretty[parameter].capitalize())
     plt.tick_params(axis='both', which='major', labelsize=10)
@@ -82,6 +84,15 @@ def plot_parameter_graph(parameter):
     plt.legend(loc='best', prop={'size': 10})
     plt.grid()
     fig.suptitle("Accuracy for different values of {}".format(pretty[parameter]))
+
+    if parameter == 'alpha':
+        # Change text renderer to be able to render 2**x
+        pyplot.rc('text', usetex="True")
+        pyplot.rcParams['font.size'] = 13
+        # pyplot.rcParams['font.sans-serif'] = 'Bitstream Vera Sans'
+        # pyplot.rcParams['font.size'] = 14
+        # pyplot.rcParams['font.weight'] = 'bold'
+        plt.tick_params(axis='x', which='major', labelsize=16)
 
     graph_path = source_path / 'graphs'
     graph_path.mkdir(exist_ok=True)
