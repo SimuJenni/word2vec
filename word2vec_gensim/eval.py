@@ -9,13 +9,17 @@ import numpy as np
 from six import iteritems, itervalues, string_types
 
 
-def evaluate_questions(questions, modeldir, outdir, most_sim_fun=gensim.models.Word2Vec.most_similar):
+def evaluate_questions(questions, modeldir, outdir, recenter, most_sim_fun=gensim.models.Word2Vec.most_similar):
     for filename in os.listdir(modeldir):
         # Check if file can and should be evaluated
         if not filename.startswith('.') and filename not in os.listdir(outdir) and not filename.endswith('.npy'):
             logging.info('Computing accuracy of model: ' + filename)
-            model = gensim.models.Word2Vec.load(modeldir + filename)
-            model = recenter_model(model)
+            if filename.endswith('.bin'):
+                model = gensim.models.Word2Vec.load_word2vec_format(modeldir + filename, binary=True)
+            else:
+                model = gensim.models.Word2Vec.load(modeldir + filename)
+            if recenter:
+                model = recenter_model(model)
             sections = model.accuracy(questions, most_similar=most_sim_fun)
             # Write out to pickle file
             outfile = open(outdir + filename, 'wb+')
@@ -43,6 +47,7 @@ def recenter_model(model):
     model.syn0 = model.syn0norm - np.mean(model.syn0norm, axis=0)   # Mean-shift
     model.syn0norm = None
     model.init_sims()   # Re-normalize
+    model.syn0 = model.syn0norm
     return model
 
 def section_accuracy(section):
@@ -173,7 +178,8 @@ def most_similar_myDists(model, positive=[], negative=[], topn=10, restrict_voca
 
     # dists = -np.linalg.norm(limited - target, axis=1)    # L2
     # dists = -np.sum(np.abs(limited - target), axis=1)    # Manhattan
-    dists = 2*np.dot(limited, target) / (np.linalg.norm(limited, axis=1)**2 + np.linalg.norm(target)**2)  # Dice
+    # dists = 2*np.dot(limited, target) / (np.linalg.norm(limited, axis=1)**2 + np.linalg.norm(target)**2)  # Dice
+    dists = np.dot(limited, target/np.linalg.norm(target)) - 0.1*np.abs(np.dot(a, b)-np.dot(limited, c)) - 0.1*np.abs(np.dot(c, b)-np.dot(limited, a))
 
     if not topn:
         return dists
@@ -183,10 +189,14 @@ def most_similar_myDists(model, positive=[], negative=[], topn=10, restrict_voca
     return result[:topn]
 
 
+def most_similar_cosmul(model, positive=[], negative=[], topn=10, restrict_vocab=None):
+    return model.most_similar_cosmul(positive, negative, topn)
+
 def main():
     logging.getLogger().setLevel(logging.INFO)
     most_sim = gensim.models.Word2Vec.most_similar  # Cosine distance
-    # most_sim = most_similar_myDists
+    most_sim = most_similar_myDists
+    # most_sim = most_similar_cosmul
 
     #run_evals()
     # evaluate_questions_kNN('../word2vec_data/questions-words.txt',
@@ -196,6 +206,12 @@ def main():
     evaluate_questions('../word2vec_data/questions-words.txt',
                        '../word2vec_data/models/',
                        '../word2vec_data/accuracy/',
+                       recenter=True,
+                       most_sim_fun=most_sim)
+    evaluate_questions('../word2vec_data/questions-words.txt',
+                       '../word2vec_data/models/',
+                       '../word2vec_data/accuracy/',
+                       recenter=False,
                        most_sim_fun=most_sim)
 
 if __name__ == '__main__':
