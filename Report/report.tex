@@ -110,10 +110,15 @@ resulting vector in the embedding space when evaluating the accuracy of this wor
 We generalise the notion of accuracy by considering not only the nearest word-vector, but 
 consider the set of the $k$ nearest vectors and test whether the target word is present therein. 
 
+From this more general accuracy measure we make the observation that the model's guesses 
+are often not far from the correct solution. This suggests that already small changes to the computations 
+for analogy questions could have a positive impact on the accuracy. We propose two such small changes that 
+can be easily applied to existing word2vec models (without retraining) and demonstrate their effectiveness on
+a generalised question set.
 
 The content of this paper is structured as follows: Section \ref{sec:relwork} gives an overview 
 of relevant previous works. In Section \ref{sec:model} we present a brief overview of the underlying 
-model and in Section \ref{sec:exp} we outline the experimental setup and testdata used. 
+model and techniques used for answering analogies. An outline of the experimental setup and the used test data is provided in Section \ref{sec:exp}. 
 The results of the experiments are then reported in Section \ref{sec:res} before we conclude
 in \ref{sec:end}.
 
@@ -158,6 +163,14 @@ centre-words. }
 \label{fig:cbow}
 \end{figure}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.42\textwidth]{skip-gram}
+\caption{Architecture of the Skip-Gram model. The output of this model are vectors with probabilities 
+for the words occurring in the context of the input word.}
+\label{fig:skip}
+\end{figure}
+
 \section{The Models of word2vec}
 \label{sec:model}
 
@@ -183,19 +196,19 @@ with a $N \times |V|$ weight matrix $\boldsymbol{W'}$ and applying softmax to th
 probability distribution over words in the vocabulary. Concretely, given a sequence of 
 training words $w_1, w_2, \dots , w_T$ the hidden-states are computed as
 \begin{equation}
-	h = \boldsymbol{W}w.
+	h = \boldsymbol{W^T}w.
 \end{equation}
 
 Given the values of the hidden units, the output can be computed as
 \begin{equation}
-	y = P_t(\boldsymbol{W'}h)
+	y = P_t(\boldsymbol{W'^T}h)
 \end{equation}
-with the softmax function $P_t$ of a $N$-dimensional vector $x$ given by 
+with the softmax function $P_t$ of a $|V|$-dimensional vector $x$ given by 
 \begin{equation}
 	P_t(x)_i = \frac{e^{x_i}}{\sum_{j=1}^{|V|}{e^{x_j}}},
 \end{equation}
 for $i \in \{1, \hdots , |V|\}$.
-The learnt word representations are then given by the columns of $\boldsymbol{W}$.
+The learnt word representations are then given by the rows of $\boldsymbol{W}$.
 
 The models are learnt in an unsupervised fashion where either the centre-word of
 a series of words is predicted from its context (CBOW) or the context is
@@ -209,17 +222,10 @@ At test time when looking for the word most similar to a given word $w$ we solve
 	\label{eq:sim}
 \end{equation}
 Where $f$ is the embedding and $d$ is a similarity measure. We therefore search for the 
-word in the vocabulary which has the minimal distance in the embedding space. The 
+word in the vocabulary which has the maximal similarity in the embedding space. The 
 model as proposed by \cite{mikolov2013efficient} chose $d$ to be the cosine similarity, 
 but we investigate different choices such as $L^p$-norm or Dice similarity.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.42\textwidth]{skip-gram}
-\caption{Architecture of the Skip-Gram model. The output of this model are vectors with probabilities 
-for the words occurring in the context of the input word.}
-\label{fig:skip}
-\end{figure}
 
 \subsection{Word Arithmetic for Solving Analogies}
 \label{sec:arithm}
@@ -288,7 +294,7 @@ We therefore propose the following mean-shift procedure:
 \item Compute dot-products with query vector to get cosine-similarities
 \end{enumerate}
 
-The intuition behind this procedure is depicted in Figure \ref{fig:ms} which demonstrates how points very close by get distributed out. Note that the word arithmetic to compute the query vector is performed after the normalisation (otherwise no change in the results would be expected). We denote this approach with $CosMS$ in our experiments.
+The intuition behind this procedure is depicted in Figure \ref{fig:ms} which demonstrates how points that are very close get distributed out. Note that the word arithmetic to compute the query vector is performed after the normalisation (otherwise no change in the results would be expected). We denote this approach with $CosMS$ in our experiments.
 
 
 \subsection{Combining Analogy Interpretations}
@@ -300,7 +306,7 @@ that is $x$ and $y$ should have the same similarity as $u$ and $v$. Yet another 
 \begin{equation}
 	v = \underset{v \in f(V)}{\text{argmin }}  |d(x, u)-d(y, v)|.
 \end{equation}
-Note that these objectives all capture different aspects of the analogy, \textit{i.e.} they are not implying each other. We propose to combine these objectives in a weighted sum of these terms. Let $\phi$ denote the term in Equation \ref{eq:anal2}, \textit{i.e.}
+Note that these objectives all capture different aspects of the analogy, \textit{i.e.} they are not implying each other. We propose to combine these objectives in a weighted sum. Let $\phi$ denote the term in Equation \ref{eq:anal2}, \textit{i.e.}
 \begin{equation}
 	\phi(v)=d(v, u) - d(v, x) + d(v, y).
 \end{equation}
@@ -331,7 +337,6 @@ identified the following set of parameters for our experiments:
 \item Vector size (\textit{i.e.} dimension of hidden-layer)
 \item Learning rate $\alpha$
 \item Training corpus
-\item Hierarchical softmax vs. negative sampling for Skip-Gram
 \end{enumerate}
 
 \subsection{Training Text Corpora}
@@ -381,26 +386,6 @@ starting with "The ..." or similar.  The result is a set of 4,557 questions.
 \section{Results}
 \label{sec:res}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_acc_window}
-\caption{Accuracy for different values of the context-window size. }
-\label{fig:window}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_acc_size}
-\caption{Accuracy for different values of vector-size (\textit{i.e.} dimension of embedding space). }
-\label{fig:size}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.5\textwidth]{graph_acc_alpha}
-\caption{Accuracy for different values of the learning rate $\alpha$. }
-\label{fig:alpha}
-\end{figure}
 
 \subsection{Influence of Parameters on Model Performance}
 \label{sec:baseline}
@@ -409,16 +394,36 @@ For this purpose we plotted the accuracy obtained for different values of a chos
 The baseline model for the comparison is a Skip-Gram model with a learning rate $\alpha=0.025$, window size of 5 and vector size equal to 100. 
 Here, the accuracy is defined as the ratio of the number of right answers over the total number of questions.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_window}
+\caption{Accuracy for different values of the context-window size. }
+\label{fig:window}
+\end{figure}
 
 In Figure~\ref{fig:window} we see that the window size has only a limited influence on the accuracy.
 It is also difficult to pinpoint a common best value but window sizes between 5 and 8 seem to work well on all corpora. 
 Generally the model is quite robust with respect to this parameter.
 Interestingly, a bigger window size seems beneficial when using CBOW on the wiki corpus, but detrimental when using Skip-Gram.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_size}
+\caption{Accuracy for different values of vector-size (\textit{i.e.} dimension of embedding space). }
+\label{fig:size}
+\end{figure}
+
 Conversely, we see in Figure~\ref{fig:size} that a large enough vector size is essential for good performance.
 A larger value generally improves accuracy, although we get diminishing returns above a certain point.
 This is not surprising as the vector size defines the complexity of the model and therefore also matters more for larger corpora.
 Obviously the vector size also has some effect on training time, so it is wise to restrain the vector size.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{graph_acc_alpha}
+\caption{Accuracy for different values of the learning rate $\alpha$. }
+\label{fig:alpha}
+\end{figure}
 
 The learning rate $\alpha$ greatly affects performance as can be seen in Figure~\ref{fig:alpha}.
 We observe that if we choose the learning rate too high (\textit{e.g.} above $2^{-3.5}$) the accuracy drops dramatically. The reason for this can be found in the gradient descent update rule, where a high value of $\alpha$ will make the gradients overshoot the minimum.
@@ -430,15 +435,15 @@ that neural networks are dependent on large amounts of training data. This is es
 Considering the choice of model architecture we also notice that  Skip-Gram slightly outperforms CBOW in most cases. It should be noted however that the Skip-Gram model is slightly more complex to train.
 
 
+\subsection{K-NN Accuracy}
+In cases when the model gives the wrong answer, the common definition of accuracy ignores how far off the model's prediction was from the correct answer. To get an idea of how wrong the model really is, we use a different definition of accuracy where we consider the $k$ nearest neighbours of the prediction. We count the answer as a success if this set of neighbours contains the correct answer.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{graph_knn-acc}
 \caption{Curve showing the $k$-NN accuracy for values of $k$ between 1 and 100. Note that the vocabulary size is 71,290 for the \textit{Text8}  and 218,316 for the \textit{Wiki} models.}
 \label{fig:knn}
 \end{figure}
-
-\subsection{K-NN Accuracy}
-In cases when the model gives the wrong answer, the common definition of accuracy ignores how far off the model's prediction was from the correct answer. To get an idea of how wrong the model really is, we tried a different definition of accuracy where we consider the $k$ nearest neighbours of the prediction. We count the answer as a success if this set of neighbours contains the correct answer.
 
 We plotted this k-NN accuracy for different values of \textit{k} in Figure~\ref{fig:knn}. It is clearly observable that the accuracy increases dramatically when changing from $k=1$ to $2$ or $3$ and only slowly starts saturating at around $k>10$. This suggests that the prediction is in fact not far off most of the time and suggests that small modifications to the similarity computations (such as the mean-shift) might have a positive effect on the performance. We also notice how models trained on larger corpora saturate faster and that the difference in performance between CBOW and Skip-Gram is more apparent in models trained on small corpora.
 %TODO: Numbers guessed using the graph, may not be accurate
@@ -457,7 +462,7 @@ $CosMS$   &        47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\
 $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   &     \textbf{65.4\%}   &    \textbf{15.5\%}    &   \textbf{16.0\%}     &   \textbf{43.9\%}    &     78.4\%   &    \textbf{33.9\%}    &   47.7\%    &   \textbf{44.0\%}     \\
  \hline
 \end{tabular}
-\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed mean-shift approach for comparison and note a slight increase in accuracy. Note that the total is computed as the micro-average (mean over all questions).} 
+\caption{Comparison of different similarity-measures. Results obtained on the generalised question set of \cite{mikolov2013efficient} with a Skip-Gram model trained on the \textit{Text8} corpus. We can observe that cosine-similarity overall performs better compared to the other measures.  Although not a similarity-measure by its own we list the results of our proposed mean-shift ($CosMS$) and "combination of interpretations" ($CosMS+$) approaches for comparison. We observe slight increases in accuracy for both methods. Note that the total is computed as the micro-average (mean over all questions).} 
 \label{tab:dists}
 \end{table*}
 
@@ -576,21 +581,21 @@ Skip-Gram $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24
 
 \subsection{Limitations}
 %TODO: Talk about combination of parameters variation?
-All of our experiments were based on small word2vec models,
-relatively to the size of models often used in practice.
-We can observe the importance of the model size on our results,
-suggesting this would also be the case with larger models.
-Likewise we used corpora of multiple kinds through this work,
-but the only large corpora (\textit{text8} and \textit{wiki}) are based on the same material.
+All of our experiments were based on relatively small word2vec models
+compared to the size of models often used in practice.
+We can observe the importance and effects of the model size in our experiments, 
+but we can not be sure how our results translate to much larger models. 
+We tested with corpora of different kinds throughout this work,
+but the larger corpora (\textit{text8} and \textit{wiki}) are both based on the same material (Wikipedia articles).
+We can therefore not be sure how our results translate to corpora of similar size but different nature for example. 
+Related is the question of how the results translate to corpora in another language.
 
-Moreover, experimenting with two novel sets of questions seems insufficient to conclude on models performance on specific domains.
+Moreover, experimenting with two novel sets of questions seems insufficient to conclude on the model's performance on specific domains.
 We also observe how counter-productive re-training can be, but this could be anecdotal.
-This would be clearer if we tried updating the original model with a model of similar size.
-We could compare the accuracy of both models individually and mixed together.
-Then we would know if bad results are caused by the re-training itself,
-or simply one of the model performing significantly worse than the other.
+This would become clearer if we updated the original model with a re-training corpus of similar size as the original corpus (requiring a large corpus).
+We could then compare the accuracies of both models and decide whether one performs significantly worse than the other.
 
-Lastly, we could not find a convincing theoretical explanation for the performance difference between similarity measures. Understanding the cause of such a difference would help find better measures. 
+Lastly, we could not find a convincing theoretical explanation for the performance difference between similarity measures. Understanding the cause of such a difference could possibly  help finding better measures. 
 
 
 \subsection{Future Work}
@@ -598,9 +603,9 @@ As explained in the previous section,
 it would be interesting to train and evaluate models on much larger corpora to confirm the tendencies we exposed.
 In particular, we need to check if improvements from mean-shift and the combination of interpretations translate to bigger models.
 
-We want to work on ways to explicitly train models with the goal of querying for analogies and similarities in mind.
+Another interesting direction of work is to figure out ways to explicitly train models with the goal of querying for analogies and similarities in mind. 
 
-Finally we want to compare the performance of word2vec against other tools such as GloVe\footnote{Global Vectors for Word Representation} \cite{pennington2014glove} and recurrent neural networks.
+Finally we want to compare the performance of word2vec against other tools such as GloVe\footnote{Global Vectors for Word Representation} \cite{pennington2014glove} and models based on recurrent neural networks.
 
 
 \subsection{Conclusion}
