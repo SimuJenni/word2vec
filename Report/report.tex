@@ -145,9 +145,13 @@ similar words to a given query word. A query \textit{e.g.} for \textit{Hogwarts}
 a list of famous schools in their modified Skip-Gram implementation while CBOW returns 
 a list of \textit{Harry Potter} characters.
 
+In \cite{levy2014linguistic} the same authors introduce an alternative interpretation of analogies and a corresponding similarity measure which is based on factors of cosine similarities. They demonstrate state-of-the-art results with their approach which they named $3CosMul$.
+
+
+
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.375\textwidth]{cbow}
+\includegraphics[width=0.4\textwidth]{cbow}
 \caption{Architecture of the CBOW model. The three one-hot input vectors represent the context 
 of a centre word in a sentence and the output vector is a vector with probabilities over possible 
 centre-words. }
@@ -211,7 +215,7 @@ but we investigate different choices such as $L^p$-norm or Dice similarity.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.4\textwidth]{skip-gram}
+\includegraphics[width=0.42\textwidth]{skip-gram}
 \caption{Architecture of the Skip-Gram model. The output of this model are vectors with probabilities 
 for the words occurring in the context of the input word.}
 \label{fig:skip}
@@ -448,7 +452,7 @@ $CosAdd$    & 47.4\%     &     21.3\%     &     22.2\%   &    63.7\%    &    15.
 $Dice$      &    42.8\%     &    20.5\%      &    19.5\%    &    65.0\%    &   13.5\%     &     15.4\%  &    37.7\%    &    \textbf{79.2\%}    &    32.1\%    &     44.8\%   & 41.1\%        \\
 $L^2$        &     44.0\%    &    14.9\%      &    20.6\%    &     60.1\%   &    15.2\%    &   11.8\%     &   27.7\%     &     74.9\%   &    30.2\%    &   42.8\%     &   39.9\%     \\
 $L^1$ &    39.5\%     &     17.5\%     &     17.4\%   &    56.9\%    &    12.8\%    &   8.8\%     &   25.7\%     &    72.8\%    &   24.8\%     &    36.2\%    &    36.1\%   \\
-$CosMul$   &        43.4\%    &    20.5\%     &    20.6\%   &     56.5\%   &    13.2\%    &   11.8\%     &   39.7\%    &     73.5\%   &    28.6\%   &   39.9\%   &   39.5\%     \\
+$3CosMul$   &        43.4\%    &    20.5\%     &    20.6\%   &     56.5\%   &    13.2\%    &   11.8\%     &   39.7\%    &     73.5\%   &    28.6\%   &   39.9\%   &   39.5\%     \\
 $CosMS$   &        47.8\%    &    \textbf{21.6\%}      &    23.1\%   &     63.4\%   &    15.1\%    &   15.0\%     &   42.7\%    &     77.9\%   &    33.0\%    &   \textbf{49.3\%}    &   43.3\%     \\
 $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   &     \textbf{65.4\%}   &    \textbf{15.5\%}    &   \textbf{16.0\%}     &   \textbf{43.9\%}    &     78.4\%   &    \textbf{33.9\%}    &   47.7\%    &   \textbf{44.0\%}     \\
  \hline
@@ -458,10 +462,12 @@ $CosMS+$   &        \textbf{49.2\%}    &    21.3\%     &    \textbf{24.1\%}   & 
 \end{table*}
 
 \subsection{Similarity Measures}
-To compare the different similarity measures introduced in Subsections \ref{sec:sim} and  \ref{sec:ms} we show results on selected categories of the generalised analogy dataset \cite{mikolov2013efficient} obtained with the baseline Skip-Gram model with parameters shown in Table \ref{tab:baseline}. 
+To compare the different similarity measures introduced in Subsections \ref{sec:sim} and  \ref{sec:ms} we show results on selected categories of the generalised analogy dataset \cite{mikolov2013efficient} obtained with the baseline Skip-Gram model described in Section \ref{sec:baseline}.
 The resulting accuracies are listed in Table \ref{tab:dists}. 
 
 We observe that overall cosine similarities perform significantly better than the other similarity measures (with a few exceptions). Possible explanations for this circumstance are difficult to provide. For one we note that the Euclidean distance between weight-vectors are never explicitly used in the training of the model. In fact, the weight vectors only occur in dot-products with the columns of the hidden-to-out weight matrix $\boldsymbol{W'}$. Another explanation is that the norm of a word vector is related to the word-frequency as found by \cite{Schakel:2015aa} and is therefore not directly helpful in the analogy task.
+
+In our comparison we also included results for the similarity measure $3CosMul$ as proposed in \cite{levy2014linguistic}. Contrary to their results, we do not observe an increase in accuracy using this approach. Most likely this is due to differing underlying corpora or other parameter choices. 
 
 \subsection{Mean Shift and Combination of Analogy Interpretations }
 Tables \ref{tab:msWiki} and \ref{tab:mst8} show results comparing models with and without the proposed mean-shift and combination of analogy interpretations. Results for the models with mean-shift are indicated with \textit{CosMS}. We observe a slight overall improvement of models with mean-shift compared to the standard model for all the models. 
